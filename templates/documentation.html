@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Documentation{% endblock %}
+
+{% block content %}
+<section class="pt-32 dark:bg-darkmode">
+    <div class="container mx-auto lg:max-w-screen-xl md:max-w-screen-md px-4">
+        <h1 class="text-center mb-8">Documentation</h1>
+        <div class="prose dark:prose-invert max-w-none">
+            <h2>Getting Started</h2>
+            <p class="text-gray dark:text-gray-400">This is a Django + Tailwind CSS property website.</p>
+            
+            <h2>Features</h2>
+            <ul class="text-gray dark:text-gray-400">
+                <li>Responsive design with Tailwind CSS</li>
+                <li>Dark mode support</li>
+                <li>Property listings and search</li>
+                <li>Blog system</li>
+                <li>Contact forms</li>
+            </ul>
+        </div>
+    </div>
+</section>
+{% endblock %}

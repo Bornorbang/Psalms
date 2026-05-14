@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Psalms - Managing the right way{% endblock %}</title>
+    {% load static %}
+    <link rel="icon" type="image/png" href="{% static 'images/Psalm-favicon.png' %}">
+    <link rel="stylesheet" href="{% static 'dist/output.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Playfair Display', serif; font-weight: 700; }
+        button, a, .btn { font-family: 'Inter', sans-serif; font-weight: 500; }
+        p, span, div, label, input, textarea, select { font-family: 'Inter', sans-serif; }
+        .font-display { font-family: 'Playfair Display', serif; }
+        .font-body { font-family: 'Inter', sans-serif; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="text-base overflow-x-hidden font-normal">
+    {% block header %}
+        {% include 'components/header.html' %}
+    {% endblock %}
+    
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+    {% block footer %}
+        {% include 'components/footer.html' %}
+    {% endblock %}
+    
+    <!-- Scroll to Top Button -->
+    <button id="scroll-to-top" class="fixed bottom-8 right-8 z-50 p-3 bg-primary text-white rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 opacity-0 invisible">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+    </button>
+    
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 50
+        });
+    </script>
+    <script src="{% static 'js/theme-toggle.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

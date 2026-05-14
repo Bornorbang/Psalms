@@ -1,0 +1,19 @@
+{% load static %}
+<a href="{% url 'blog_detail' blog.slug %}" aria-label="blog cover" class="flex gap-4 group">
+    <div class="overflow-hidden rounded-lg flex-shrink-0 w-52 h-48">
+        <img src="{% static blog.coverImage %}" alt="{{ blog.title }}" class="transition group-hover:scale-125 w-full h-full object-cover">
+    </div>
+    <div class="ml-4 md:mt-0 md:ml-4 flex-1 flex flex-col justify-evenly">
+        <div>
+            <span class="text-sm sm:text-base md:text-lg font-medium text-gray dark:text-gray-400 leading-loose">
+                {{ blog.date }}
+            </span>
+            <h3 class="mt-2 text-xl sm:text-[22px] leading-[1.2] md:text-2xl font-medium text-midnight_text dark:text-white group-hover:text-primary">
+                {{ blog.title }}
+            </h3>
+        </div>
+        <p class="block mt-4 text-primary text-base sm:text-lg">
+            Read More
+        </p>
+    </div>
+</a>

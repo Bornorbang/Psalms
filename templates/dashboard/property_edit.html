@@ -1,0 +1,296 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load static %}
+
+{% block dashboard_title %}{{ page_title }}{% endblock %}
+
+{% block subtitle_content %}
+<p class="text-gray-600 dark:text-gray-400">
+    Update property details
+</p>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="bg-white dark:bg-semidark rounded-xl shadow-sm p-6">
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+        
+        <!-- Basic Information Section -->
+        <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
+            <h2 class="text-xl font-semibold text-midnight_text dark:text-white mb-4">Basic Information</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        Property Title *
+                    </label>
+                    {{ form.title }}
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        Property Type *
+                    </label>
+                    {{ form.property_type }}
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        Listing Type *
+                    </label>
+                    {{ form.listing_type }}
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        Status *
+                    </label>
+                    {{ form.status }}
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                    Description *
+                </label>
+                {{ form.description }}
+            </div>
+        </div>
+        
+        <!-- Pricing Section -->
+        <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
+            <h2 class="text-xl font-semibold text-midnight_text dark:text-white mb-4">Pricing</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        Price *
+                    </label>
+                    {{ form.price }}
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        Currency
+                    </label>
+                    {{ form.currency }}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Location Section -->
+        <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
+            <h2 class="text-xl font-semibold text-midnight_text dark:text-white mb-4">Location</h2>
+            <div class="grid grid-cols-1 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        Address *
+                    </label>
+                    {{ form.address }}
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                            City *
+                        </label>
+                        {{ form.city }}
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                            State/Province *
+                        </label>
+                        {{ form.state }}
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                            Country *
+                        </label>
+                        {{ form.country }}
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                            Postal Code
+                        </label>
+                        {{ form.postal_code }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Property Details Section -->
+        <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
+            <h2 class="text-xl font-semibold text-midnight_text dark:text-white mb-4">Property Details</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        Bedrooms
+                    </label>
+                    {{ form.bedrooms }}
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        Bathrooms
+                    </label>
+                    {{ form.bathrooms }}
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        Garages
+                    </label>
+                    {{ form.garages }}
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        Living Area (m²)
+                    </label>
+                    {{ form.living_area }}
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        Total Area (m²)
+                    </label>
+                    {{ form.total_area }}
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        Floors
+                    </label>
+                    {{ form.floors }}
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        Year Built
+                    </label>
+                    {{ form.year_built }}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Current Featured Image -->
+        {% if property.featured_image %}
+        <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
+            <h2 class="text-xl font-semibold text-midnight_text dark:text-white mb-4">Current Featured Image</h2>
+            <img src="{{ property.featured_image.url }}" alt="{{ property.title }}" class="w-64 h-48 object-cover rounded-lg">
+        </div>
+        {% endif %}
+        
+        <!-- Featured Image Section -->
+        <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
+            <h2 class="text-xl font-semibold text-midnight_text dark:text-white mb-4">Update Featured Image</h2>
+            <div>
+                <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                    Upload New Featured Image (optional)
+                </label>
+                {{ form.featured_image }}
+                <p class="mt-2 text-sm text-gray-500">Leave blank to keep current image</p>
+            </div>
+        </div>
+        
+        <!-- Property Images Section -->
+        <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
+            <h2 class="text-xl font-semibold text-midnight_text dark:text-white mb-4">Property Images</h2>
+            
+            <!-- Existing Images -->
+            {% if property.images.all %}
+            <div class="mb-6">
+                <h3 class="text-lg font-medium text-midnight_text dark:text-white mb-3">Existing Images</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {% for image in property.images.all %}
+                    <div class="relative">
+                        <img src="{{ image.image.url }}" alt="{{ image.caption }}" class="w-full h-32 object-cover rounded-lg">
+                        {% if image.is_primary %}
+                        <span class="absolute top-2 right-2 bg-primary text-white text-xs px-2 py-1 rounded">Primary</span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            {{ formset.management_form }}
+            <div id="formset-container" class="space-y-4">
+                {% for form in formset %}
+                <div class="formset-form border border-gray-300 dark:border-gray-600 rounded-lg p-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                                Image {{ forloop.counter }}
+                            </label>
+                            {{ form.image }}
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                                Caption
+                            </label>
+                            {{ form.caption }}
+                        </div>
+                        
+                        <div class="flex items-center space-x-6">
+                            <label class="flex items-center">
+                                {{ form.is_primary }}
+                                <span class="ml-2 text-sm text-midnight_text dark:text-white">Primary Image</span>
+                            </label>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                                    Order
+                                </label>
+                                {{ form.order }}
+                            </div>
+                        </div>
+                        
+                        {% if formset.can_delete %}
+                        <div class="flex items-center">
+                            {{ form.DELETE }}
+                            <label class="ml-2 text-sm text-red-600">Delete this image</label>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Assignment Section -->
+        <div class="border-b border-gray-200 dark:border-gray-700 pb-6">
+            <h2 class="text-xl font-semibold text-midnight_text dark:text-white mb-4">Property Assignment</h2>
+            <div>
+                <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                    {{ form.landlord.label }}
+                </label>
+                {{ form.landlord }}
+                <p class="mt-2 text-sm text-gray-500">Currently assigned to: {% if property.landlord %}{{ property.landlord.get_full_name }}{% else %}None{% endif %}</p>
+            </div>
+        </div>
+        
+        <!-- Featured Section -->
+        <div class="pb-6">
+            <h2 class="text-xl font-semibold text-midnight_text dark:text-white mb-4">Additional Options</h2>
+            <div class="flex items-center">
+                {{ form.is_featured }}
+                <label class="ml-2 text-sm text-midnight_text dark:text-white">
+                    Mark as Featured Property (will appear on homepage)
+                </label>
+            </div>
+        </div>
+        
+        <!-- Submit Buttons -->
+        <div class="flex items-center justify-end space-x-4 pt-6">
+            <a href="{% url 'agent_property_list' %}" class="px-6 py-3 border border-gray-300 dark:border-gray-600 text-midnight_text dark:text-white rounded-lg hover:bg-gray-50 dark:hover:bg-darklight transition-colors">
+                Cancel
+            </a>
+            <button type="submit" class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors">
+                Update Property
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

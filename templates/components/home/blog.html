@@ -1,0 +1,56 @@
+{% load static %}
+<section class="flex flex-col dark:bg-darkmode px-4 md:px-4">
+    <div class="container mx-auto lg:max-w-screen-xl md:max-w-screen-md px-0">
+        <div class="items-center sm:mb-11 mb-7 flex justify-center">
+            <h2 class="text-2xl sm:text-4xl text-midnight_text dark:text-white text-center font-bold">Blog Post</h2>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12" id="blog-container"></div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('{% static "data/blogs.json" %}')
+        .then(response => response.json())
+        .then(blogs => {
+            const container = document.getElementById('blog-container');
+            blogs.slice(0, 2).forEach((blog, index) => {
+                const delay = index * 200;
+                const formattedDate = new Date(blog.date).toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+                
+                const html = `
+                    <div class="w-full" data-aos="fade-up" data-aos-delay="${delay}" data-aos-duration="1000">
+                        <div class="bg-white dark:bg-darklight rounded-lg shadow-lg overflow-hidden group">
+                                <a href="/blogs/${blog.slug}/">
+                                    <div class="imageContainer h-64 w-full overflow-hidden">
+                                        <img src="/static${blog.coverImage}" alt="${blog.title}" class="w-full h-full object-cover group-hover:scale-125 duration-500">
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex gap-2 items-center mb-4">
+                                        <img src="/static${blog.authorImage}" alt="${blog.author}" class="w-10 h-10 rounded-full object-cover">
+                                        <div>
+                                            <p class="text-gray dark:text-gray-400 text-sm">${formattedDate}</p>
+                                        </div>
+                                    </div>
+                                    <h3 class="text-2xl font-bold text-midnight_text dark:text-white mb-3 group-hover:text-primary dark:group-hover:text-primary transition-colors">
+                                        ${blog.title}
+                                    </h3>
+                                    <p class="text-gray dark:text-gray-400 mb-4 line-clamp-2">
+                                        ${blog.excerpt}
+                                    </p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+            AOS.refresh();
+        })
+        .catch(error => console.error('Error loading blogs:', error));
+});
+</script>

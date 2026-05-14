@@ -1,0 +1,85 @@
+{% load static %}
+<section class="px-4 md:px-0 dark:bg-darkmode">
+    <div class="container lg:max-w-screen-xl md:max-w-screen-md px-8 mx-auto py-12">
+        <h2 class="text-4xl font-bold mb-12 text-midnight_text dark:text-white text-center" data-aos="fade-up">What Our Clients Say</h2>
+        <div class="flex flex-col-reverse md:flex-row items-center justify-between">
+            <div class="flex justify-between w-full">
+                <div class="flex-1 lg:block hidden" data-aos="fade-right">
+                <img src="{% static 'images/testimonial/vector-smart.png' %}" alt="testimonial" width="451" height="470" style="width: auto; height: auto;">
+            </div>
+            <div class="flex-1 relative" data-aos="fade-left">
+                <img src="{% static 'images/testimonial/quote.svg' %}" alt="quote" class="mb-4 md:mb-6" height="135" width="135">
+                
+                <!-- Testimonial Carousel -->
+                <div class="testimonial-carousel relative overflow-hidden">
+                    <!-- Testimonial 1 -->
+                    <div class="testimonial-item transition-opacity duration-500">
+                        <p class="text-base md:text-lg text-customgray dark:text-gray-300 mb-6 md:mb-12">
+                            Psalms made finding my dream apartment so easy! The platform is intuitive and listings are detailed and accurate.
+                        </p>
+                        <p class="text-base md:text-lg text-midnight_text dark:text-white font-semibold">Adebayo Johnson</p>
+                        <p class="text-customgray dark:text-gray-400 text-sm md:text-base">Tenant</p>
+                    </div>
+                    
+                    <!-- Testimonial 2 -->
+                    <div class="testimonial-item transition-opacity duration-500 absolute top-0 left-0 w-full opacity-0">
+                        <p class="text-base md:text-lg text-customgray dark:text-gray-300 mb-6 md:mb-12">
+                            Managing my properties has never been easier. The transparency and professionalism is outstanding!
+                        </p>
+                        <p class="text-base md:text-lg text-midnight_text dark:text-white font-semibold">Mrs. Folake Williams</p>
+                        <p class="text-customgray dark:text-gray-400 text-sm md:text-base">Landlord</p>
+                    </div>
+                    
+                    <!-- Testimonial 3 -->
+                    <div class="testimonial-item transition-opacity duration-500 absolute top-0 left-0 w-full opacity-0">
+                        <p class="text-base md:text-lg text-customgray dark:text-gray-300 mb-6 md:mb-12">
+                            Working with Psalms has streamlined my entire workflow. Their tools help me serve clients better every day.
+                        </p>
+                        <p class="text-base md:text-lg text-midnight_text dark:text-white font-semibold">Chidi Okonkwo</p>
+                        <p class="text-customgray dark:text-gray-400 text-sm md:text-base">Real Estate Agent</p>
+                    </div>
+                    
+                    <!-- Testimonial 4 -->
+                    <div class="testimonial-item transition-opacity duration-500 absolute top-0 left-0 w-full opacity-0">
+                        <p class="text-base md:text-lg text-customgray dark:text-gray-300 mb-6 md:mb-12">
+                            The best property management platform in Lagos! Everything was smooth and professional from search to move-in.
+                        </p>
+                        <p class="text-base md:text-lg text-midnight_text dark:text-white font-semibold">Amina Hassan</p>
+                        <p class="text-customgray dark:text-gray-400 text-sm md:text-base">Property Manager</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Testimonial Carousel Auto-rotation
+document.addEventListener('DOMContentLoaded', function() {
+    const testimonialItems = document.querySelectorAll('.testimonial-item');
+    let currentIndex = 0;
+    
+    function showTestimonial(index) {
+        testimonialItems.forEach((item, i) => {
+            if (i === index) {
+                item.classList.remove('opacity-0');
+                item.classList.add('opacity-100');
+            } else {
+                item.classList.remove('opacity-100');
+                item.classList.add('opacity-0');
+            }
+        });
+    }
+    
+    function nextTestimonial() {
+        currentIndex = (currentIndex + 1) % testimonialItems.length;
+        showTestimonial(currentIndex);
+    }
+    
+    // Auto-rotate every 7 seconds
+    setInterval(nextTestimonial, 7000);
+    
+    // Show first testimonial on load
+    showTestimonial(0);
+});
+</script>

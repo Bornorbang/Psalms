@@ -1,0 +1,12 @@
+{
+  "name": "psalms-django-tailwind",
+  "version": "1.0.0",
+  "description": "Django project with Tailwind CSS",
+  "scripts": {
+    "build:css": "tailwindcss -i ./static/src/input.css -o ./static/dist/output.css --minify",
+    "watch:css": "tailwindcss -i ./static/src/input.css -o ./static/dist/output.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
+  }
+}

@@ -1,0 +1,8 @@
+{% load static %}
+<section class="text-center bg-cover bg-center bg-no-repeat pt-48 pb-32 relative overflow-x-hidden" style="background-image: url('{% static 'images/hero-second.jpeg' %}');">
+    <div class="absolute inset-0 bg-gradient-to-b from-black/60 to-black/40"></div>
+    <h2 class="text-white text-[50px] leading-[1.2] relative font-bold capitalize">{{ title }}</h2>
+    <p class="text-lg text-white/90 font-normal max-w-md w-full mx-auto mt-7 mb-12 sm:px-0 px-4 relative">
+        {{ description }}
+    </p>
+</section>

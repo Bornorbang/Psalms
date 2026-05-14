@@ -1,0 +1,82 @@
+<section class="bg-light dark:bg-semidark flex justify-center items-center">
+    <div class="lg:max-w-screen-xl md:max-w-screen-md mx-auto container px-4">
+        <h1 class="text-4xl font-bold mb-12 text-midnight_text dark:text-white" data-aos="fade-up">Featured Properties</h1>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% load static %}
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                fetch('{% static "data/propertydata.json" %}')
+                    .then(response => response.json())
+                    .then(data => {
+                        const container = document.getElementById('featured-properties');
+                        data.slice(0, 6).forEach((property, index) => {
+                            const delay = index * 100;
+                            const html = `
+                                <div data-aos="fade-up" data-aos-delay="${delay}">
+                                    <div class="bg-white shadow-property dark:bg-darklight rounded-lg overflow-hidden">
+                                        <a href="{% url 'properties_list' %}${property.slug}/" class="group">
+                                            <div class="relative">
+                                                <div class="imageContainer h-[250px] w-full">
+                                                    <img src="/static${property.property_img}" alt="${property.property_title}" width="400" height="250" class="w-full h-full object-cover group-hover:scale-125 duration-500">
+                                                </div>
+                                                <p class="absolute top-[10px] left-[10px] py-1 px-4 bg-white rounded-md text-primary items-center">
+                                                    ${property.tag}
+                                                </p>
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="absolute top-[10px] right-[10px] bg-white p-2 rounded-lg" viewBox="0 0 24 24" width="38" height="38" fill="#2F73F2">
+                                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                                                </svg>
+                                            </div>
+                                            <div class="p-5 sm:p-8 dark:text-white text-opacity-50">
+                                                <div class="flex flex-col gap-1 border-b border-border dark:border-dark_border mb-6">
+                                                    <div>
+                                                        <p class="text-base text-gray dark:text-gray-400">
+                                                            ${property.property_title}
+                                                        </p>
+                                                    </div>
+                                                    <div class="flex justify-between items-center pb-4">
+                                                        <div class="font-bold text-2xl group-hover:text-primary text-midnight_text dark:text-white">
+                                                            ${property.property_price}
+                                                        </div>
+                                                        <div class="text-xs bg-[#DAE7FF] dark:bg-white text-midnight_text dark:text-primary py-1 px-2 rounded-lg font-bold">
+                                                            ${property.location}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="flex gap-2 flex-wrap justify-between">
+                                                    <div class="flex flex-col">
+                                                        <p class="md:text-xl text-lg font-bold flex gap-2">
+                                                            <img src="{% static 'images/svgs/icon-bed.svg' %}" alt="Bedrooms" height="18" width="18">
+                                                            ${property.beds}
+                                                        </p>
+                                                        <p class="text-sm text-gray dark:text-gray-400">Bedrooms</p>
+                                                    </div>
+                                                    <div class="flex flex-col">
+                                                        <p class="md:text-xl text-lg font-bold flex gap-2">
+                                                            <img src="{% static 'images/svgs/icon-tub.svg' %}" alt="Bathrooms" height="18" width="18">
+                                                            ${property.bathrooms}
+                                                        </p>
+                                                        <p class="text-sm text-gray dark:text-gray-400">Bathroom</p>
+                                                    </div>
+                                                    <div class="flex flex-col">
+                                                        <p class="md:text-xl text-lg font-bold flex gap-2">
+                                                            <img src="{% static 'images/svgs/icon-layout.svg' %}" alt="Living Area" height="18" width="18">
+                                                            ${property.livingArea}
+                                                        </p>
+                                                        <p class="text-sm text-gray dark:text-gray-400">Living Area</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            `;
+                            container.innerHTML += html;
+                        });
+                        AOS.refresh();
+                    });
+            });
+            </script>
+            <div id="featured-properties" class="contents"></div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,218 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load static %}
+
+{% block dashboard_title %}Invoice Details{% endblock %}
+
+{% block subtitle_content %}
+<p class="text-gray-600 dark:text-gray-400">
+    View invoice details and make payment
+</p>
+{% endblock %}
+
+{% block dashboard_content %}
+<!-- Back Button -->
+<div class="mb-6">
+    <a href="{% url 'tenant_invoices' %}" class="inline-flex items-center text-primary hover:text-blue-700 dark:hover:text-blue-300">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        Back to Invoices
+    </a>
+</div>
+
+<!-- Invoice Card -->
+<div class="bg-white dark:bg-semidark rounded-lg shadow-lg overflow-hidden">
+    <!-- Invoice Header -->
+    <div class="bg-gradient-to-r from-primary to-blue-600 text-white px-8 py-6">
+        <div class="flex justify-between items-start">
+            <div>
+                <h2 class="text-2xl font-bold mb-2">Invoice {{ invoice.invoice_number }}</h2>
+                <p class="text-blue-100">Issued: {{ invoice.issue_date|date:"F d, Y" }}</p>
+                <p class="text-blue-100">Due: {{ invoice.due_date|date:"F d, Y" }}</p>
+            </div>
+            <div>
+                {% if invoice.status == 'PAID' %}
+                    <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-green-500 text-white">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Paid
+                    </span>
+                {% elif invoice.status == 'OVERDUE' %}
+                    <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-red-500 text-white">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Overdue
+                    </span>
+                {% elif invoice.status == 'SENT' %}
+                    <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-yellow-500 text-white">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Pending
+                    </span>
+                {% else %}
+                    <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-gray-500 text-white">
+                        {{ invoice.get_status_display }}
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Invoice Body -->
+    <div class="px-8 py-6">
+        <!-- Property Information -->
+        <div class="mb-8">
+            <h3 class="text-lg font-semibold text-midnight_text dark:text-white mb-4">Property Details</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 dark:bg-darklight rounded-lg p-4">
+                <div>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Property</p>
+                    <p class="text-midnight_text dark:text-white font-medium">{{ invoice.rental_agreement.rental_property.title }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Address</p>
+                    <p class="text-midnight_text dark:text-white font-medium">{{ invoice.rental_agreement.rental_property.city }}, {{ invoice.rental_agreement.rental_property.state }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Landlord</p>
+                    <p class="text-midnight_text dark:text-white font-medium">{{ invoice.rental_agreement.landlord.get_full_name }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Rental Period</p>
+                    <p class="text-midnight_text dark:text-white font-medium">{{ invoice.rental_agreement.start_date|date:"M d, Y" }} - {{ invoice.rental_agreement.end_date|date:"M d, Y" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoice Details -->
+        <div class="mb-8">
+            <h3 class="text-lg font-semibold text-midnight_text dark:text-white mb-4">Invoice Information</h3>
+            <div class="bg-gray-50 dark:bg-darklight rounded-lg p-4">
+                <div class="mb-4">
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Description</p>
+                    <p class="text-midnight_text dark:text-white">{{ invoice.description|default:"Monthly Rent Payment" }}</p>
+                </div>
+                {% if invoice.notes %}
+                <div>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Notes</p>
+                    <p class="text-midnight_text dark:text-white">{{ invoice.notes }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Amount Summary -->
+        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-6 mb-8">
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-midnight_text dark:text-white">Invoice Amount</span>
+                    <span class="text-lg font-semibold text-midnight_text dark:text-white">${{ invoice.amount|floatformat:2 }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-midnight_text dark:text-white">Amount Paid</span>
+                    <span class="text-lg font-semibold text-green-600">${{ invoice.paid_amount|floatformat:2 }}</span>
+                </div>
+                <div class="border-t border-blue-300 dark:border-blue-600 pt-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-lg font-bold text-midnight_text dark:text-white">Balance Due</span>
+                        <span class="text-2xl font-bold {% if invoice.balance > 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                            ${{ invoice.balance|floatformat:2 }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Simulation (Only if balance > 0) -->
+        {% if invoice.balance > 0 and invoice.status != 'CANCELLED' %}
+        <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-6 mb-8">
+            <h3 class="text-lg font-semibold text-midnight_text dark:text-white mb-4">Make Payment</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Payment gateway integration coming soon. For now, use the buttons below to simulate payment status.
+            </p>
+            <form method="post" action="{% url 'payment_simulate' invoice.invoice_number %}">
+                {% csrf_token %}
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button type="submit" name="action" value="success" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors inline-flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Mark Payment as Success
+                    </button>
+                    <button type="submit" name="action" value="failure" class="flex-1 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors inline-flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        Mark Payment as Failed
+                    </button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+
+        <!-- Payment History -->
+        {% if invoice.payments.exists %}
+        <div class="mt-8">
+            <h3 class="text-lg font-semibold text-midnight_text dark:text-white mb-4">Payment History</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50 dark:bg-darklight">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">Reference</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">Date</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">Amount</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">Method</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">Receipt</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white dark:bg-semidark divide-y divide-gray-200 dark:divide-gray-700">
+                        {% for payment in invoice.payments.all %}
+                        <tr>
+                            <td class="px-4 py-3 text-sm text-midnight_text dark:text-white font-medium">{{ payment.payment_reference }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{{ payment.created_at|date:"M d, Y H:i" }}</td>
+                            <td class="px-4 py-3 text-sm text-midnight_text dark:text-white">${{ payment.amount|floatformat:2 }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{{ payment.get_payment_method_display }}</td>
+                            <td class="px-4 py-3">
+                                {% if payment.status == 'SUCCESS' %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                        Success
+                                    </span>
+                                {% elif payment.status == 'FAILED' %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                                        Failed
+                                    </span>
+                                {% elif payment.status == 'PENDING' %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                        Pending
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
+                                        {{ payment.get_status_display }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-3">
+                                {% if payment.status == 'SUCCESS' and payment.receipt %}
+                                    <a href="{% url 'download_receipt' payment.receipt.receipt_number %}" class="text-primary hover:text-blue-700 inline-flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                        </svg>
+                                        View
+                                    </a>
+                                {% else %}
+                                    <span class="text-gray-400">N/A</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

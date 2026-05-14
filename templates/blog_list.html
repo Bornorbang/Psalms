@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Blog - Psalms{% endblock %}
+
+{% block content %}
+{% include 'components/hero_sub.html' with title="Our Blog" description="Latest insights, tips, and news about property management and real estate" breadcrumb_links=breadcrumb_links %}
+
+<!-- Search and Filter Section -->
+<section class="bg-gray-50 dark:bg-darkmode py-8">
+    <div class="container mx-auto lg:max-w-screen-xl md:max-w-screen-md px-4">
+        <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+            <!-- Search -->
+            <form method="get" class="flex-1 max-w-md">
+                <div class="relative">
+                    <input type="text" name="search" value="{{ search_query|default:'' }}" 
+                           placeholder="Search articles..." 
+                           class="w-full py-3 px-4 pr-12 border border-border dark:border-dark_border dark:bg-midnight_text dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                    <button type="submit" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-primary hover:text-blue-700">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+            
+            <!-- Category Filter -->
+            <div class="flex gap-2 flex-wrap">
+                <a href="{% url 'blogs' %}" 
+                   class="px-4 py-2 rounded-lg {% if not current_category %}bg-primary text-white{% else %}bg-white dark:bg-midnight_text text-midnight_text dark:text-white border border-border dark:border-dark_border{% endif %} hover:bg-primary hover:text-white transition">
+                    All
+                </a>
+                {% for category in categories %}
+                <a href="?category={{ category.slug }}" 
+                   class="px-4 py-2 rounded-lg {% if current_category == category.slug %}bg-primary text-white{% else %}bg-white dark:bg-midnight_text text-midnight_text dark:text-white border border-border dark:border-dark_border{% endif %} hover:bg-primary hover:text-white transition">
+                    {{ category.name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Blog Grid -->
+<section class="dark:bg-darkmode px-4 py-16">
+    <div class="container lg:max-w-screen-xl md:max-w-screen-md mx-auto">
+        {% if blogs %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for blog in blogs %}
+            <article class="bg-white dark:bg-midnight_text rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300" data-aos="fade-up" data-aos-delay="{{ forloop.counter0 }}00">
+                <!-- Featured Image -->
+                <a href="{% url 'blog_detail' blog.slug %}" class="block relative overflow-hidden group">
+                    {% if blog.featured_image %}
+                    <img src="{{ blog.featured_image.url }}" alt="{{ blog.title }}" class="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-300">
+                    {% else %}
+                    <div class="w-full h-56 bg-gradient-to-br from-primary/20 to-blue-600/20 flex items-center justify-center">
+                        <svg class="w-16 h-16 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                        </svg>
+                    </div>
+                    {% endif %}
+                    {% if blog.category %}
+                    <span class="absolute top-4 left-4 bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold">
+                        {{ blog.category.name }}
+                    </span>
+                    {% endif %}
+                </a>
+                
+                <!-- Content -->
+                <div class="p-6">
+                    <!-- Meta -->
+                    <div class="flex items-center gap-4 text-sm text-gray dark:text-gray-400 mb-3">
+                        <div class="flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            <span>{{ blog.published_at|date:"M d, Y" }}</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>{{ blog.read_time }} min read</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Title -->
+                    <h3 class="text-xl font-bold text-midnight_text dark:text-white mb-3 line-clamp-2 hover:text-primary transition">
+                        <a href="{% url 'blog_detail' blog.slug %}">{{ blog.title }}</a>
+                    </h3>
+                    
+                    <!-- Excerpt -->
+                    <p class="text-gray dark:text-gray-400 text-base mb-4 line-clamp-3">{{ blog.excerpt }}</p>
+                    
+                    <!-- Footer -->
+                    <div class="flex items-center justify-between pt-4 border-t border-border dark:border-dark_border">
+                        <div class="flex items-center gap-2">
+                            {% if blog.author.profile_picture %}
+                            <img src="{{ blog.author.profile_picture.url }}" alt="{{ blog.author.get_full_name }}" class="w-8 h-8 rounded-full object-cover">
+                            {% else %}
+                            <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-semibold">
+                                {{ blog.author.first_name.0|default:blog.author.username.0|upper }}
+                            </div>
+                            {% endif %}
+                            <span class="text-sm text-midnight_text dark:text-white font-medium">{{ blog.author.get_full_name|default:blog.author.username }}</span>
+                        </div>
+                        <a href="{% url 'blog_detail' blog.slug %}" class="text-primary hover:text-blue-700 font-medium text-sm flex items-center gap-1">
+                            Read more
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if blogs.has_other_pages %}
+        <div class="flex justify-center mt-12">
+            <nav class="flex gap-2">
+                {% if blogs.has_previous %}
+                <a href="?page={{ blogs.previous_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}" 
+                   class="px-4 py-2 border border-border dark:border-dark_border rounded-lg text-midnight_text dark:text-white hover:bg-primary hover:text-white hover:border-primary transition">
+                    Previous
+                </a>
+                {% endif %}
+                
+                {% for num in blogs.paginator.page_range %}
+                    {% if blogs.number == num %}
+                    <span class="px-4 py-2 bg-primary text-white rounded-lg">{{ num }}</span>
+                    {% elif num > blogs.number|add:'-3' and num < blogs.number|add:'3' %}
+                    <a href="?page={{ num }}{% if current_category %}&category={{ current_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}" 
+                       class="px-4 py-2 border border-border dark:border-dark_border rounded-lg text-midnight_text dark:text-white hover:bg-primary hover:text-white hover:border-primary transition">
+                        {{ num }}
+                    </a>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if blogs.has_next %}
+                <a href="?page={{ blogs.next_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}" 
+                   class="px-4 py-2 border border-border dark:border-dark_border rounded-lg text-midnight_text dark:text-white hover:bg-primary hover:text-white hover:border-primary transition">
+                    Next
+                </a>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+        
+        {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-16">
+            <svg class="w-24 h-24 mx-auto text-gray dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <h3 class="text-2xl font-bold text-midnight_text dark:text-white mb-2">No blog posts found</h3>
+            <p class="text-gray dark:text-gray-400 mb-6">{% if search_query %}Try adjusting your search criteria{% else %}Check back later for new content{% endif %}</p>
+            <a href="{% url 'blogs' %}" class="inline-block bg-primary text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+                View All Posts
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

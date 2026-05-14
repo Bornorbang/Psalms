@@ -1,0 +1,74 @@
+{% load static %}
+<header class="fixed h-24 top-0 py-1 z-50 w-full bg-white dark:bg-semidark shadow-sm transition-all border-b border-[#102D47]" id="header">
+    <div class="w-full flex items-center justify-between py-6">
+        <!-- Left Side: Hamburger (Mobile Only) + Logo -->
+        <div class="flex items-center space-x-3 pl-4 lg:pl-6">
+            <!-- Mobile Sidebar Toggle - Left Side -->
+            <button id="mobile-sidebar-toggle" class="lg:hidden p-2 rounded-lg text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center" aria-label="Toggle sidebar">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+            
+            <a href="/">
+                <img src="{% static 'images/black-logo.png' %}" alt="Psalm Logo" width="110" height="34" class="object-contain lg:w-[140px] lg:h-[44px] dark:hidden">
+                <img src="{% static 'images/white-logo.png' %}" alt="Psalm Logo" width="110" height="34" class="hidden dark:block object-contain lg:w-[140px] lg:h-[44px]">
+            </a>
+        </div>
+
+        <!-- Desktop Navigation - Removed, keeping only user actions -->
+        
+        <!-- Right Side Actions -->
+        <div class="flex items-center space-x-4 pr-4 lg:pr-8">
+            <!-- Theme Toggle -->
+            <button aria-label="Toggle theme" id="theme-toggle" class="flex h-8 w-8 items-center justify-center text-body-color duration-300 dark:text-white">
+                <svg viewBox="0 0 16 16" class="hidden h-6 w-6 dark:block theme-icon-light">
+                    <path d="M4.50663 3.2267L3.30663 2.03337L2.36663 2.97337L3.55996 4.1667L4.50663 3.2267ZM2.66663 7.00003H0.666626V8.33337H2.66663V7.00003ZM8.66663 0.366699H7.33329V2.33337H8.66663V0.366699V0.366699ZM13.6333 2.97337L12.6933 2.03337L11.5 3.2267L12.44 4.1667L13.6333 2.97337ZM11.4933 12.1067L12.6866 13.3067L13.6266 12.3667L12.4266 11.1734L11.4933 12.1067ZM13.3333 7.00003V8.33337H15.3333V7.00003H13.3333ZM7.99996 3.6667C5.79329 3.6667 3.99996 5.46003 3.99996 7.6667C3.99996 9.87337 5.79329 11.6667 7.99996 11.6667C10.2066 11.6667 12 9.87337 12 7.6667C12 5.46003 10.2066 3.6667 7.99996 3.6667ZM7.33329 14.9667H8.66663V13H7.33329V14.9667ZM2.36663 12.36L3.30663 13.3L4.49996 12.1L3.55996 11.16L2.36663 12.36Z" fill="#FFFFFF" />
+                </svg>
+                <svg viewBox="0 0 23 23" class="h-8 w-8 text-dark dark:hidden theme-icon-dark">
+                    <path d="M16.6111 15.855C17.591 15.1394 18.3151 14.1979 18.7723 13.1623C16.4824 13.4065 14.1342 12.4631 12.6795 10.4711C11.2248 8.47905 11.0409 5.95516 11.9705 3.84818C10.8449 3.9685 9.72768 4.37162 8.74781 5.08719C5.7759 7.25747 5.12529 11.4308 7.29558 14.4028C9.46586 17.3747 13.6392 18.0253 16.6111 15.855Z" fill="currentColor"/>
+                </svg>
+            </button>
+
+            <!-- User Avatar with Dropdown -->
+            <div class="relative group flex items-center justify-center">
+                {% if user.profile_picture %}
+                    <img src="{{ user.profile_picture.url }}" alt="avatar" width="35" height="35" class="rounded-full cursor-pointer object-cover">
+                {% else %}
+                    <img src="{% static 'images/avatar/avatar_1.jpg' %}" alt="avatar" width="35" height="35" class="rounded-full cursor-pointer object-cover">
+                {% endif %}
+                
+                <!-- Dropdown Menu -->
+                <div class="absolute w-56 bg-white dark:bg-semidark rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 top-full right-0 mt-3 z-50">
+                    <div class="py-2">
+                        <div class="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+                            <p class="text-sm font-semibold text-midnight_text dark:text-white">{{ user.get_full_name }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ user.get_role_display }}</p>
+                            <p class="text-xs text-primary font-medium mt-1">ID: {{ user.user_id }}</p>
+                        </div>
+                        <a href="{% url 'profile_view' %}" class="block px-4 py-2 text-midnight_text dark:text-white hover:bg-light dark:hover:bg-darklight hover:text-primary dark:hover:text-primary">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            My Profile
+                        </a>
+                        <a href="{% url 'profile_edit' %}" class="block px-4 py-2 text-midnight_text dark:text-white hover:bg-light dark:hover:bg-darklight hover:text-primary dark:hover:text-primary">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            Edit Profile
+                        </a>
+                        <div class="border-t border-gray-200 dark:border-gray-700 my-1"></div>
+                        <a href="{% url 'signout' %}" class="block px-4 py-2 text-red-600 dark:text-red-400 hover:bg-light dark:hover:bg-darklight">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                            </svg>
+                            Sign Out
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

@@ -1,0 +1,117 @@
+{% load static %}
+<footer class="relative z-10 bg-midnight_text dark:bg-semidark">
+    <div class="container mx-auto lg:max-w-screen-xl md:max-w-screen-md pt-10 pb-5 px-0 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 px-4 sm:px-0">
+            <!-- Column 1: Logo, Contact, Social - 36% (4.3 cols) -->
+            <div class="lg:col-span-4">
+                <a href="/" class="mb-4 inline-block max-w-52">
+                    <img src="{% static 'images/white-logo.png' %}" alt="Psalm Logo" width="160" height="40" class="object-contain">
+                </a>
+                <p class="text-white text-sm mb-6 leading-relaxed">
+                    Your trusted property management partner, simplifying rentals with transparency and care. Managing the right way.
+                </p>
+                <div class="flex items-center gap-2">
+                    <a aria-label="social link" href="/#" class="p-1 rounded-md text-midnight_text dark:text-white bg-white dark:bg-white/50 bg-opacity-50 hover:bg-primary">
+                        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" class="fill-current">
+                            <path d="M16.294 8.86875H14.369H13.6815V8.18125V6.05V5.3625H14.369H15.8128C16.1909 5.3625 16.5003 5.0875 16.5003 4.675V1.03125C16.5003 0.653125 16.2253 0.34375 15.8128 0.34375H13.3034C10.5878 0.34375 8.69714 2.26875 8.69714 5.12187V8.1125V8.8H8.00964H5.67214C5.19089 8.8 4.74402 9.17812 4.74402 9.72812V12.2031C4.74402 12.6844 5.12214 13.1313 5.67214 13.1313H7.94089H8.62839V13.8188V20.7281C8.62839 21.2094 9.00652 21.6562 9.55652 21.6562H12.7878C12.994 21.6562 13.1659 21.5531 13.3034 21.4156C13.4409 21.2781 13.544 21.0375 13.544 20.8312V13.8531V13.1656H14.2659H15.8128C16.2596 13.1656 16.6034 12.8906 16.6721 12.4781V12.4438V12.4094L17.1534 10.0375C17.1878 9.79688 17.1534 9.52187 16.9471 9.24687C16.8784 9.075 16.569 8.90312 16.294 8.86875Z" />
+                        </svg>
+                    </a>
+                    <a aria-label="social link" href="/#" class="p-1 rounded-md text-midnight_text dark:text-white bg-white dark:bg-white/50 bg-opacity-50 hover:bg-primary">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" class="fill-current">
+                            <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z" />
+                        </svg>
+                    </a>
+                    <a aria-label="social link" href="/#" class="p-1 rounded-md text-midnight_text dark:text-white bg-white dark:bg-white/50 bg-opacity-50 hover:bg-primary">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" class="fill-current">
+                            <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Column 2: Company - 21% (2.5 cols) -->
+            <div class="lg:col-span-3">
+                <h4 class="mb-4 text-lg text-white dark:text-white">
+                    Company
+                </h4>
+                <div class="space-y-3">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-white flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        <p class="text-white text-base">
+                            4263 Wilkinson Street Tennessee
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                        </svg>
+                        <a href="tel:+6902560020" class="text-white hover:text-primary text-base">+(690) 2560 0020</a>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                        <a href="mailto:PsalmsHQ@gmail.com" class="text-white hover:text-primary text-base">PsalmsHQ@gmail.com</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 3: Quick Links - 21% (2.5 cols) -->
+            <div class="lg:col-span-3">
+                <h4 class="mb-4 text-lg text-white dark:text-white">
+                    Quick Links
+                </h4>
+                <ul>
+                    <li>
+                        <a href="{% url 'properties_list' %}" class="mb-3 inline-block text-base text-white hover:text-primary">
+                            Properties
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'about' %}" class="mb-3 inline-block text-base text-white hover:text-primary">
+                            About Us
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Column 4: Popular Searches - 21% (2 cols) -->
+            <div class="lg:col-span-2">
+                <h4 class="mb-4 text-lg text-white dark:text-white">
+                    Popular Searches
+                </h4>
+                <ul>
+                    <li>
+                        <a href="{% url 'properties_list' %}?category=apartment" class="mb-3 inline-block text-base text-white hover:text-primary">
+                            Apartment for Rent
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'properties_list' %}?category=house" class="mb-3 inline-block text-base text-white hover:text-primary">
+                            House for Buy
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'properties_list' %}?category=office" class="mb-3 inline-block text-base text-white hover:text-primary">
+                            Offices for Buy
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'properties_list' %}?category=shop" class="mb-3 inline-block text-base text-white hover:text-primary">
+                            Shop for Rent
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="border-t border-border dark:border-dark_border py-4 mt-12">
+        <div class="container mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-white text-sm">
+                © 2026 Psalms. All rights reserved.
+            </p>
+        </div>
+    </div>
+</footer>

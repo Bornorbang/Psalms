@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sign Up - Psalms{% endblock %}
+
+{% block content %}
+<section class="pt-32 pb-16 dark:bg-darkmode min-h-screen flex items-center">
+    <div class="container mx-auto lg:max-w-screen-xl md:max-w-screen-md px-4">
+        <div class="max-w-md mx-auto bg-white dark:bg-semidark p-8 rounded-lg shadow-lg">
+            <!-- Logo and Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold mb-2 text-midnight_text dark:text-white">Create Account</h1>
+                <p class="text-gray-600 dark:text-gray-400">Join Psalms - Managing the right way</p>
+            </div>
+
+            <!-- Messages -->
+            {% if messages %}
+                <div class="space-y-2 mb-6">
+                    {% for message in messages %}
+                        <div class="rounded-lg p-4 {% if message.tags == 'error' %}bg-red-50 text-red-800 dark:bg-red-900 dark:text-red-200{% elif message.tags == 'success' %}bg-green-50 text-green-800 dark:bg-green-900 dark:text-green-200{% else %}bg-blue-50 text-blue-800 dark:bg-blue-900 dark:text-blue-200{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Registration Form -->
+            <form method="POST" action="{% url 'signup' %}" class="space-y-4">
+                {% csrf_token %}
+                
+                <div>
+                    <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        Username
+                    </label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.username.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                            First Name
+                        </label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.first_name.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                            Last Name
+                        </label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.last_name.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div>
+                    <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        Email Address
+                    </label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.email.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.phone_number.id_for_label }}" class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        Phone Number (Optional)
+                    </label>
+                    {{ form.phone_number }}
+                    {% if form.phone_number.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.phone_number.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.role.id_for_label }}" class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        I am a...
+                    </label>
+                    {{ form.role }}
+                    {% if form.role.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.role.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.password1.id_for_label }}" class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        Password
+                    </label>
+                    {{ form.password1 }}
+                    {% if form.password1.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.password1.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.password2.id_for_label }}" class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        Confirm Password
+                    </label>
+                    {{ form.password2 }}
+                    {% if form.password2.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.password2.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="w-full bg-primary text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors mt-6">
+                    Create Account
+                </button>
+                
+                <p class="text-center text-gray-600 dark:text-gray-400 mt-4">
+                    Already have an account? <a href="{% url 'signin' %}" class="text-primary hover:underline font-medium">Sign In</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

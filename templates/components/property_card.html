@@ -1,0 +1,66 @@
+{% load static %}
+<div class="bg-white shadow-property dark:bg-darklight rounded-lg overflow-hidden" data-aos="fade-up">
+    <a href="{% url 'property_detail' property.slug %}" class="group {% if view_mode == 'list' %}flex{% endif %}">
+        <div class="relative {% if view_mode == 'list' %}w-[30%]{% endif %}">
+            <div class="imageContainer h-[250px] w-full {% if view_mode == 'list' %}h-full md:h-52{% endif %}">
+                {% if property.featured_image %}
+                <img src="{{ property.featured_image.url }}" alt="Image of {{ property.title }}" class="w-full h-full object-cover group-hover:scale-125 duration-500">
+                {% else %}
+                <img src="{% static 'images/properties/prop-' %}{{ property.id|default:'1' }}.jpg" alt="Image of {{ property.title }}" class="w-full h-full object-cover group-hover:scale-125 duration-500" onerror="this.onerror=null; this.src='{% static 'images/properties/prop-1.jpg' %}';">
+                {% endif %}
+            </div>
+            <p class="absolute top-[10px] left-[10px] py-1 px-4 bg-white rounded-md text-primary items-center">
+                {% if property.listing_type == 'RENT' %}For Rent{% elif property.listing_type == 'SALE' %}For Sale{% else %}Both{% endif %}
+            </p>
+            <svg xmlns="http://www.w3.org/2000/svg" class="absolute top-[10px] right-[10px] bg-white p-2 rounded-lg" viewBox="0 0 24 24" width="38" height="38" fill="#2F73F2">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+            </svg>
+        </div>
+        <div class="p-5 sm:p-8 dark:text-white text-opacity-50 {% if view_mode == 'list' %}w-[70%] flex flex-col justify-center{% endif %}">
+            <div class="flex flex-col gap-1 border-b border-border dark:border-dark_border mb-6">
+                <div>
+                    <p class="text-base text-gray dark:text-gray-400">
+                        {{ property.title }}
+                    </p>
+                </div>
+                <div class="flex justify-between items-center pb-4">
+                    <div class="font-bold text-2xl group-hover:text-primary text-midnight_text dark:text-white">
+                        {{ property.formatted_price }}
+                    </div>
+                    <div class="text-xs bg-[#DAE7FF] dark:bg-white text-midnight_text dark:text-primary py-1 px-2 rounded-lg font-bold">
+                        {{ property.city }}
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-2 flex-wrap justify-between">
+                <div class="flex flex-col">
+                    <p class="text-sm md:text-base font-bold flex gap-2 items-center">
+                        <img src="{% static 'images/svgs/icon-bed.svg' %}" alt="Bedrooms Icon" height="18" width="18" style="width: auto; height: auto;">
+                        {{ property.bedrooms|default:"N/A" }}
+                    </p>
+                    <p class="text-sm text-gray dark:text-gray-400">
+                        Bedrooms
+                    </p>
+                </div>
+                <div class="flex flex-col">
+                    <p class="text-sm md:text-base font-bold flex gap-2 items-center">
+                        <img src="{% static 'images/svgs/icon-tub.svg' %}" alt="Bathrooms Icon" height="18" width="18" style="width: auto; height: auto;">
+                        {{ property.bathrooms|default:"N/A" }}
+                    </p>
+                    <p class="text-sm text-gray dark:text-gray-400">
+                        Bathroom
+                    </p>
+                </div>
+                <div class="flex flex-col">
+                    <p class="text-sm md:text-base font-bold flex gap-2 items-center">
+                        <img src="{% static 'images/svgs/icon-layout.svg' %}" alt="Living Area Icon" height="18" width="18" style="width: auto; height: auto;">
+                        {{ property.living_area|default:"N/A" }}m²
+                    </p>
+                    <p class="text-sm text-gray dark:text-gray-400">
+                        Living Area
+                    </p>
+                </div>
+            </div>
+        </div>
+    </a>
+</div>

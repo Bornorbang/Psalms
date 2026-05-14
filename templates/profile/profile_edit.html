@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block header %}
+    {% include "components/header_auth.html" %}
+{% endblock %}
+
+{% block content %}
+<section class="pt-32 pb-16 dark:bg-darkmode min-h-screen">
+    <div class="container mx-auto lg:max-w-screen-xl md:max-w-screen-md px-4">
+        
+        <!-- Messages -->
+        {% if messages %}
+            <div class="mb-6 space-y-2">
+                {% for message in messages %}
+                    <div class="rounded-lg p-4 {% if message.tags == 'error' %}bg-red-50 text-red-800 dark:bg-red-900 dark:text-red-200{% elif message.tags == 'success' %}bg-green-50 text-green-800 dark:bg-green-900 dark:text-green-200{% elif message.tags == 'warning' %}bg-yellow-50 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200{% else %}bg-blue-50 text-blue-800 dark:bg-blue-900 dark:text-blue-200{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="max-w-2xl mx-auto bg-white dark:bg-semidark rounded-lg shadow-lg p-8">
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-3xl font-bold text-midnight_text dark:text-white">Edit Profile</h1>
+                <a href="{% url 'profile_view' %}" class="text-primary hover:underline">
+                    Back to Profile
+                </a>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- Profile Picture -->
+                <div>
+                    <label class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        Profile Picture
+                    </label>
+                    
+                    <div class="flex items-center space-x-6">
+                        <div class="shrink-0">
+                            {% if user.profile_picture %}
+                                <img id="preview" src="{{ user.profile_picture.url }}" alt="Profile" class="h-24 w-24 object-cover rounded-full">
+                            {% else %}
+                                <img id="preview" src="{% static 'images/avatar/avatar_1.jpg' %}" alt="Profile" class="h-24 w-24 object-cover rounded-full">
+                            {% endif %}
+                        </div>
+                        <div class="flex-1">
+                            {{ form.profile_picture }}
+                            {% if form.profile_picture.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.profile_picture.errors.0 }}</p>
+                            {% endif %}
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                JPG, PNG or GIF (MAX. 2MB)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- First Name & Last Name -->
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                            First Name
+                        </label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.first_name.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                            Last Name
+                        </label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ form.last_name.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        Email Address
+                    </label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.email.errors.0 }}</p>
+                    {% endif %}
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        If you change your email, you'll need to verify it again.
+                    </p>
+                </div>
+
+                <!-- Phone Number -->
+                <div>
+                    <label for="{{ form.phone_number.id_for_label }}" class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        Phone Number
+                    </label>
+                    {{ form.phone_number }}
+                    {% if form.phone_number.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.phone_number.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- ID Document Upload (Only for Tenants) -->
+                {% if user.role == 'TENANT' %}
+                    <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                        <h3 class="text-lg font-semibold text-midnight_text dark:text-white mb-4 flex items-center">
+                            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/>
+                            </svg>
+                            ID Verification (KYC)
+                        </h3>
+                        
+                        {% if user.id_verified %}
+                            <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4">
+                                <div class="flex items-center">
+                                    <svg class="w-8 h-8 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <div>
+                                        <p class="text-green-800 dark:text-green-200 font-semibold">Your ID has been verified!</p>
+                                        <p class="text-sm text-green-700 dark:text-green-300">Verified on {{ user.id_verified_at|date:"F j, Y" }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% elif user.id_document %}
+                            <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4 mb-4">
+                                <div class="flex items-start">
+                                    <svg class="w-8 h-8 text-yellow-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <div>
+                                        <p class="text-yellow-800 dark:text-yellow-200 font-semibold">ID document submitted</p>
+                                        <p class="text-sm text-yellow-700 dark:text-yellow-300">Your ID is currently under review.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.id_type.id_for_label }}" class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                                ID Type
+                            </label>
+                            {{ form.id_type }}
+                            {% if form.id_type.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.id_type.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.id_document.id_for_label }}" class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                                {% if user.id_document %}Replace ID Document{% else %}Upload ID Document{% endif %}
+                            </label>
+                            
+                            {% if user.id_document %}
+                                <div class="mb-3 p-3 bg-gray-50 dark:bg-darkmode rounded-lg border border-gray-200 dark:border-gray-600">
+                                    <p class="text-sm text-gray-700 dark:text-gray-300">
+                                        Current: {{ user.id_document.name|slice:"17:" }}
+                                    </p>
+                                </div>
+                            {% endif %}
+                            
+                            {{ form.id_document }}
+                            {% if form.id_document.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.id_document.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- Submit Button -->
+                <div class="flex items-center justify-between pt-4">
+                    <a href="{% url 'profile_view' %}" class="text-gray-600 dark:text-gray-400 hover:underline">
+                        Cancel
+                    </a>
+                    <button type="submit" class="bg-primary text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+// Preview profile picture
+document.getElementById('{{ form.profile_picture.id_for_label }}').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('preview');
+            preview.innerHTML = `<img src="${e.target.result}" alt="Preview" class="h-24 w-24 object-cover rounded-full">`;
+        }
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+{% endblock %}
+
+{% block footer %}
+    {% include "components/footer_auth.html" %}
+{% endblock %}

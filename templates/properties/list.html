@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Properties - Real Estate Listings{% endblock %}
+
+{% block content %}
+<section class="pt-32 dark:bg-darkmode">
+    <div class="container mx-auto lg:max-w-screen-xl md:max-w-screen-md px-4">
+        <div class="text-center mb-12">
+            <h1>Property Listings</h1>
+            {% if location %}
+                <p class="text-gray dark:text-gray-400 mt-4">Showing results for: {{ location }}</p>
+            {% endif %}
+            {% if tag %}
+                <p class="text-gray dark:text-gray-400">Category: {{ tag }}</p>
+            {% endif %}
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+            <p class="col-span-3 text-center text-gray dark:text-gray-400">Property listings will be displayed here</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

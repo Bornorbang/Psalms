@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sign In - Psalms{% endblock %}
+
+{% block content %}
+<section class="pt-32 pb-16 dark:bg-darkmode min-h-screen flex items-center">
+    <div class="container mx-auto lg:max-w-screen-xl md:max-w-screen-md px-4">
+        <div class="max-w-md mx-auto bg-white dark:bg-semidark p-8 rounded-lg shadow-lg">
+            <!-- Logo and Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold mb-2 text-midnight_text dark:text-white">Welcome Back</h1>
+                <p class="text-gray-600 dark:text-gray-400">Sign in to your account to continue</p>
+            </div>
+
+            <!-- Messages -->
+            {% if messages %}
+                <div class="space-y-2 mb-6">
+                    {% for message in messages %}
+                        <div class="rounded-lg p-4 {% if message.tags == 'error' %}bg-red-50 text-red-800 dark:bg-red-900 dark:text-red-200{% elif message.tags == 'success' %}bg-green-50 text-green-800 dark:bg-green-900 dark:text-green-200{% else %}bg-blue-50 text-blue-800 dark:bg-blue-900 dark:text-blue-200{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Login Form -->
+            <form method="POST" action="{% url 'signin' %}" class="space-y-6">
+                {% csrf_token %}
+                
+                <div>
+                    <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        Username or Email
+                    </label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.username.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.password.id_for_label }}" class="block text-sm font-medium text-midnight_text dark:text-white mb-2">
+                        Password
+                    </label>
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.password.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                        <label for="remember-me" class="ml-2 block text-sm text-midnight_text dark:text-white">
+                            Remember me
+                        </label>
+                    </div>
+
+                    <div class="text-sm">
+                        <a href="{% url 'password_reset_request' %}" class="font-medium text-primary hover:text-blue-600">
+                            Forgot password?
+                        </a>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-primary text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">
+                    Sign In
+                </button>
+                
+                <p class="text-center text-gray-600 dark:text-gray-400">
+                    Don't have an account? <a href="{% url 'signup' %}" class="text-primary hover:underline font-medium">Sign Up</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

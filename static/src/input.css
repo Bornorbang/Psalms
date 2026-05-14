@@ -1,0 +1,227 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+    scroll-behavior: smooth;
+}
+
+* {
+    margin: 0%;
+    padding: 0%;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.custom-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg fill="blue" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+  padding-right: 2.5rem;
+}
+
+@layer utilities {
+    .text-balance {
+        text-wrap: balance;
+    }
+}
+
+@layer base {
+    * {
+        font-family: 'Inter', sans-serif;
+    }
+    
+    /* Force all heading tags to use Playfair Display */
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Playfair Display', serif !important;
+        font-weight: 700;
+    }
+    
+    /* Force all elements with text size >= 2xl and font-bold to use Playfair Display */
+    .text-2xl.font-bold,
+    .text-3xl.font-bold,
+    .text-4xl.font-bold,
+    .text-5xl.font-bold,
+    .text-6xl.font-bold,
+    [class*="text-[2"].font-bold,
+    [class*="text-[3"].font-bold,
+    [class*="text-[4"].font-bold,
+    [class*="text-[5"].font-bold {
+        font-family: 'Playfair Display', serif !important;
+    }
+}
+
+@layer components {
+    body {
+        @apply text-base overflow-x-hidden font-normal;
+        -webkit-text-size-adjust: 100%;
+        font-family: 'Inter', sans-serif;
+    }
+    html{
+        @apply overflow-x-hidden;
+    }
+
+    .blog-details p {
+        @apply dark:!text-customgray ;
+        font-family: 'Inter', sans-serif;
+    }
+    .blog-details li {
+        @apply dark:!text-customgray ;
+        font-family: 'Inter', sans-serif;
+    }
+
+    textarea,
+    input[type="text"],
+    input[type="number"],
+    input[type="email"],
+    input[type="tel"],
+    select {
+        @apply block outline-none text-base font-normal text-midnight_text m-0 rounded-[0.375rem] w-full placeholder:text-customgray;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    p, span, div, label, a, button {
+        font-family: 'Inter', sans-serif;
+    }
+
+    h1 {
+        @apply md:text-[51px] md:leading-[1.2] text-[28px] leading-[1.2] font-bold text-midnight_text dark:text-white;
+        font-family: 'Playfair Display', serif;
+        font-weight: 700;
+    }
+
+    h2 {
+        @apply md:text-[40px] leading-[1.2] text-2xl font-bold text-midnight_text dark:text-white;
+        font-family: 'Playfair Display', serif;
+        font-weight: 700;
+    }
+
+    h3 {
+        @apply md:text-[28px] leading-[1.2] text-lg font-bold text-white dark:text-primary;
+        font-family: 'Playfair Display', serif;
+        font-weight: 700;
+    }
+
+    h4 {
+        @apply text-2xl font-bold text-midnight_text dark:text-primary;
+        font-family: 'Playfair Display', serif;
+        font-weight: 700;
+    }
+
+    h5 {
+        @apply text-[22px] leading-[1.2] font-medium text-midnight_text dark:text-primary;
+        font-family: 'Playfair Display', serif;
+        font-weight: 600;
+    }
+
+    .m_icon {
+        @apply inline-block h-[3.8125rem] w-[3.4375rem] bg-no-repeat bg-cover object-cover;
+    }
+
+    .box_shadow {
+        @apply shadow-[0px_3px_20px_0px_#3B4B68];
+    }
+
+    .header_shadow {
+        @apply shadow-[0_2px_20px_rgba(0, 0, 0, 0.05)];
+    }
+
+    section {
+        @apply lg:py-24 py-16;
+    }
+
+    .btn {
+        @apply relative border-0 z-[1] py-3 px-4 text-lg font-normal rounded-lg cursor-pointer no-underline bg-primary text-white before:content-[''] before:absolute before:-z-[1] after:content-[''] after:absolute after:-z-[1] hover:bg-blue-700 transition-colors duration-300;
+    }
+
+    .link {
+        @apply text-primary hover:underline;
+    }
+
+    .slick-dots {
+        @apply flex justify-center gap-2 mt-8;
+    }
+
+    .slick-dots li {
+        @apply w-2 h-2 rounded-full bg-gray-300 cursor-pointer;
+    }
+
+    .slick-dots li.slick-active {
+        @apply bg-primary w-8;
+    }
+
+    /* Calculator styles */
+    .main-div::before {
+        content: "";
+        position: absolute;
+        top: 4px;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 3px;
+        background-color: #6bc1f9;
+    }
+
+    .relative-container {
+        position: relative;
+    }
+
+    .money-dot::before {
+        content: "";
+        position: absolute;
+        top: -34px;
+        background-color: #6bc1f9;
+        width: 12px;
+        height: 12px;
+        z-index: 1;
+        border-radius: 50%;
+    }
+
+    .money-dot::after {
+        content: "";
+        position: absolute;
+        top: -39px;
+        left: -5px;
+        padding: 6px;
+        border-radius: 50%;
+        border: 2px solid #6bc1f9;
+        height: 22px;
+        width: 22px;
+        background: white;
+        @apply dark:bg-darklight;
+    }
+
+    .child-container {
+        position: relative;
+    }
+
+    /* Background gradients */
+    .history-bg {
+        background: linear-gradient(to right, #f3f9fd 0%, #f3f9fd 64.3%, #BCCFE1 64.3%, #BCCFE1 100%);
+    }
+
+    .imageContainer {
+        position: relative;
+        overflow: hidden;
+    }
+}
+
+@media (min-width: 768px) {
+    .estate-summary-bg {
+        background: linear-gradient(to right, #fff 0%, #fff 50%, #2f73f2 50%, #2f73f2 100%);
+    }
+}
+
+@media (min-width: 768px) {
+    .dark .estate-summary-bg {
+        background: linear-gradient(to right, #0c121e 0%, #0c121e 50%, #2f73f2 50%, #2f73f2 100%);
+    }
+}
+
+.dark .history-bg {
+    background: linear-gradient(to right, #111827 0%, #0e1521 64.3%, #0c121e 64.3%, #0c121e 100%);
+}

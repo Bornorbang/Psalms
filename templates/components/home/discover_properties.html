@@ -1,0 +1,44 @@
+<section class="dark:bg-darkmode">
+    <div class="container lg:max-w-screen-xl md:max-w-screen-md mx-auto px-4">
+        <h2 class="text-4xl font-bold mb-12 text-midnight_text dark:text-white" data-aos="fade-left">Discover Properties</h2>
+        <div class="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-6 lg:gap-4 gap-8">
+            {% load static %}
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                fetch('{% static "data/propertydata.json" %}')
+                    .then(response => response.json())
+                    .then(data => {
+                        const categoryMap = {};
+                        data.forEach(item => {
+                            if (categoryMap[item.category]) {
+                                categoryMap[item.category].count += 1;
+                            } else {
+                                categoryMap[item.category] = {
+                                    category: item.category,
+                                    category_img: item.category_img,
+                                    count: 1
+                                };
+                            }
+                        });
+                        const container = document.getElementById('property-categories');
+                        Object.values(categoryMap).forEach((property, index) => {
+                            const delay = index * 100;
+                            const html = `
+                                <div class="image-item block" data-aos="fade-up" data-aos-delay="${delay}">
+                                    <a href="{% url 'properties_list' %}?category=${property.category}" class="group">
+                                        <img src="/static${property.category_img}" alt="Image" class="p-2 md:p-4 border-2 rounded-lg border-border dark:border-dark_border mb-3 md:mb-6 group-hover:-translate-y-1 group-hover:duration-500 w-12 h-12 md:w-[85px] md:h-[85px]">
+                                        <p class="text-sm md:text-[22px] leading-[1.2] font-semibold mt-1 md:mt-2 text-midnight_text text-opacity-80 group-hover:text-opacity-100 dark:text-white dark:group-hover:text-white dark:group-hover:text-opacity-100 dark:text-opacity-70 mb-1 capitalize">${property.category}</p>
+                                        <p class="text-xs md:text-base text-customgray dark:text-gray-400">${property.count} Properties</p>
+                                    </a>
+                                </div>
+                            `;
+                            container.innerHTML += html;
+                        });
+                        AOS.refresh();
+                    });
+            });
+            </script>
+            <div id="property-categories" class="contents"></div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,90 @@
+[
+  {
+    "id": 1,
+    "slug": "exploring-luxury-real-estate-markets",
+    "title": "Exploring Luxury Real Estate Markets",
+    "excerpt": "Exploring Luxury Real Estate Markets",
+    "date": "2025-11-08",
+    "coverImage": "/images/tabbar/tab-1.jpg",
+    "author": "silicaman",
+    "authorImage": "/images/blog/silicaman.jpg",
+    "content": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged."
+  },
+  {
+    "id": 2,
+    "slug": "a-guide-to-buying-real-estate-in-metropolitan",
+    "title": "A Guide to Buying Real Estate in Metropolitan",
+    "excerpt": "A Guide to Buying Real Estate in Metropolitan",
+    "date": "2025-11-08",
+    "coverImage": "/images/tabbar/tab-2.jpg",
+    "author": "silicaman",
+    "authorImage": "/images/blog/silicaman.jpg",
+    "content": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
+  },
+  {
+    "id": 3,
+    "slug": "the-future-of-sustainable-housing",
+    "title": "The Future of Sustainable Housing",
+    "excerpt": "The Future of Sustainable Housing",
+    "date": "2025-11-07",
+    "coverImage": "/images/tabbar/tab-3.jpg",
+    "author": "silicaman",
+    "authorImage": "/images/blog/silicaman.jpg",
+    "content": "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+  },
+  {
+    "id": 4,
+    "slug": "investment-strategies-for-real-estate",
+    "title": "Investment Strategies for Real Estate",
+    "excerpt": "Investment Strategies for Real Estate",
+    "date": "2025-11-06",
+    "coverImage": "/images/tabbar/tab-4.jpg",
+    "author": "silicaman",
+    "authorImage": "/images/blog/silicaman.jpg",
+    "content": "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+  },
+  {
+    "id": 5,
+    "slug": "commercial-vs-residential-properties",
+    "title": "Commercial vs Residential Properties",
+    "excerpt": "Commercial vs Residential Properties",
+    "date": "2025-11-05",
+    "coverImage": "/images/tabbar/tab-5.jpg",
+    "author": "silicaman",
+    "authorImage": "/images/blog/silicaman.jpg",
+    "content": "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+  },
+  {
+    "id": 6,
+    "slug": "understanding-property-valuation",
+    "title": "Understanding Property Valuation",
+    "excerpt": "Understanding Property Valuation",
+    "date": "2025-11-04",
+    "coverImage": "/images/tabbar/tab-1.jpg",
+    "author": "silicaman",
+    "authorImage": "/images/blog/silicaman.jpg",
+    "content": "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+  },
+  {
+    "id": 7,
+    "slug": "real-estate-market-trends-2025",
+    "title": "Real Estate Market Trends 2025",
+    "excerpt": "Real Estate Market Trends 2025",
+    "date": "2025-11-03",
+    "coverImage": "/images/tabbar/tab-2.jpg",
+    "author": "silicaman",
+    "authorImage": "/images/blog/silicaman.jpg",
+    "content": "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+  },
+  {
+    "id": 8,
+    "slug": "tips-for-first-time-home-buyers",
+    "title": "Tips for First Time Home Buyers",
+    "excerpt": "Tips for First Time Home Buyers",
+    "date": "2025-11-02",
+    "coverImage": "/images/tabbar/tab-3.jpg",
+    "author": "silicaman",
+    "authorImage": "/images/blog/silicaman.jpg",
+    "content": "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+  }
+]
