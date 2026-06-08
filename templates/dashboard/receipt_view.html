@@ -9,197 +9,331 @@
 </p>
 {% endblock %}
 
-{% block dashboard_content %}
-<!-- Print Styles -->
-<style>
-    @media print {
-        header, aside, #mobile-sidebar-toggle, .no-print {
-            display: none !important;
-        }
-        body {
-            padding: 0 !important;
-            margin: 0 !important;
-        }
-        main {
-            margin-left: 0 !important;
-        }
-    }
-</style>
+{% block sidebar_nav %}
+<a href="{% url 'tenant_dashboard' %}" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
+    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+    </svg>
+    Dashboard
+</a>
 
-<!-- Back Button (No Print) -->
-<div class="mb-6 no-print">
-    <a href="{% url 'payment_history' %}" class="inline-flex items-center text-primary hover:text-blue-700 dark:hover:text-blue-300">
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+<a href="{% url 'properties_list' %}" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
+    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+    </svg>
+    Properties
+</a>
+
+<a href="{% url 'tenant_invoices' %}" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
+    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+    </svg>
+    My Invoices
+</a>
+
+<a href="{% url 'payment_history' %}" class="flex items-center px-4 py-3 text-primary bg-blue-50 dark:bg-blue-900/20 rounded-lg font-medium">
+    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+    </svg>
+    Payment History
+</a>
+
+<a href="{% url 'messages_inbox' %}" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
+    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+    </svg>
+    Messages
+</a>
+
+<div class="pt-6 mt-6 border-t border-gray-200 dark:border-gray-700">
+    <a href="{% url 'profile_view' %}" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
+        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
         </svg>
-        Back to Payment History
+        My Profile
+    </a>
+    <a href="{% url 'signout' %}" class="flex items-center px-4 py-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg">
+        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+        </svg>
+        Sign Out
     </a>
 </div>
+{% endblock %}
 
-<!-- Receipt Card -->
-<div class="bg-white dark:bg-semidark rounded-lg shadow-lg overflow-hidden max-w-4xl mx-auto">
-    <!-- Receipt Header -->
-    <div class="bg-gradient-to-r from-green-600 to-green-700 text-white px-8 py-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <div class="flex items-center mb-2">
-                    <svg class="w-12 h-12 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <div>
-                        <h2 class="text-2xl font-bold">Payment Receipt</h2>
-                        <p class="text-green-100">Payment Successful</p>
-                    </div>
-                </div>
-            </div>
-            <div class="text-right">
-                <p class="text-sm text-green-100">Receipt Number</p>
-                <p class="text-xl font-bold">{{ receipt.receipt_number }}</p>
-                <p class="text-sm text-green-100 mt-2">Issue Date</p>
-                <p class="text-sm">{{ receipt.issued_date|date:"F d, Y H:i" }}</p>
-            </div>
-        </div>
-    </div>
+{% block dashboard_content %}
+<style>
+  /* Receipt-specific styles */
+  .receipt-paper {
+    background: #ffffff;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #1a1a2e;
+  }
+  .receipt-row td {
+    padding: 11px 16px;
+    font-size: 13px;
+    border-bottom: 1px solid #f0f0f5;
+    vertical-align: top;
+  }
+  .receipt-row td:first-child {
+    color: #6b7280;
+    width: 40%;
+    font-weight: 500;
+  }
+  .receipt-row td:last-child {
+    color: #111827;
+    font-weight: 600;
+  }
+  .receipt-row:last-child td {
+    border-bottom: none;
+  }
+  .amount-stripe {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  }
+  .paid-stamp {
+    border: 3px solid #16a34a;
+    color: #16a34a;
+    border-radius: 6px;
+    transform: rotate(-8deg);
+    display: inline-block;
+    padding: 2px 10px;
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    line-height: 1.4;
+    opacity: 0.85;
+  }
+  .zigzag-top {
+    height: 12px;
+    background:
+      radial-gradient(circle at 6px -1px, transparent 7px, #fff 7px) 0 0 / 12px 12px,
+      radial-gradient(circle at 6px 13px, #fff 7px, transparent 7px) 0 0 / 12px 12px;
+    background-color: transparent;
+    margin-bottom: -1px;
+  }
+  .zigzag-bottom {
+    height: 12px;
+    background:
+      radial-gradient(circle at 6px 13px, transparent 7px, #fff 7px) 0 0 / 12px 12px,
+      radial-gradient(circle at 6px -1px, #fff 7px, transparent 7px) 0 0 / 12px 12px;
+    background-color: transparent;
+    margin-top: -1px;
+  }
+</style>
 
-    <!-- Receipt Body -->
-    <div class="px-8 py-6">
-        <!-- Payment Information -->
-        <div class="mb-8">
-            <h3 class="text-lg font-semibold text-midnight_text dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
-                Payment Information
-            </h3>
-            <div class="grid grid-cols-2 gap-6">
-                <div>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">Payment Reference</p>
-                    <p class="text-midnight_text dark:text-white font-medium">{{ receipt.payment.payment_reference }}</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">Payment Method</p>
-                    <p class="text-midnight_text dark:text-white font-medium">{{ receipt.payment.get_payment_method_display }}</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">Payment Date</p>
-                    <p class="text-midnight_text dark:text-white font-medium">{{ receipt.payment.processed_at|date:"F d, Y H:i"|default:receipt.payment.created_at|date:"F d, Y H:i" }}</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">Status</p>
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                        </svg>
-                        {{ receipt.payment.get_status_display }}
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tenant Information -->
-        <div class="mb-8">
-            <h3 class="text-lg font-semibold text-midnight_text dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
-                Tenant Details
-            </h3>
-            <div class="grid grid-cols-2 gap-6">
-                <div>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">Full Name</p>
-                    <p class="text-midnight_text dark:text-white font-medium">{{ receipt.issued_to.get_full_name }}</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">Email</p>
-                    <p class="text-midnight_text dark:text-white font-medium">{{ receipt.issued_to.email }}</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">Phone</p>
-                    <p class="text-midnight_text dark:text-white font-medium">{{ receipt.issued_to.phone_number|default:"N/A" }}</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">User ID</p>
-                    <p class="text-midnight_text dark:text-white font-medium">{{ receipt.issued_to.user_id }}</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Property and Invoice Information -->
-        <div class="mb-8">
-            <h3 class="text-lg font-semibold text-midnight_text dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
-                Property & Invoice Details
-            </h3>
-            <div class="grid grid-cols-2 gap-6">
-                <div>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">Property</p>
-                    <p class="text-midnight_text dark:text-white font-medium">{{ receipt.payment.invoice.rental_agreement.rental_property.title }}</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">Location</p>
-                    <p class="text-midnight_text dark:text-white font-medium">{{ receipt.payment.invoice.rental_agreement.rental_property.city }}, {{ receipt.payment.invoice.rental_agreement.rental_property.state }}</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">Invoice Number</p>
-                    <p class="text-midnight_text dark:text-white font-medium">{{ receipt.payment.invoice.invoice_number }}</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">Invoice Description</p>
-                    <p class="text-midnight_text dark:text-white font-medium">{{ receipt.payment.invoice.description|default:"Monthly Rent Payment" }}</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Amount Paid -->
-        <div class="bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-700 rounded-lg p-6 mb-8">
-            <div class="text-center">
-                <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Amount Paid</p>
-                <p class="text-4xl font-bold text-green-600">
-                    ${{ receipt.payment.amount|floatformat:2 }}
-                </p>
-                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ receipt.payment.currency }}</p>
-            </div>
-        </div>
-
-        <!-- Gateway Transaction Details (if available) -->
-        {% if receipt.payment.gateway_reference or receipt.payment.gateway_response %}
-        <div class="mb-8">
-            <h3 class="text-lg font-semibold text-midnight_text dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
-                Transaction Details
-            </h3>
-            <div class="bg-gray-50 dark:bg-darklight rounded-lg p-4">
-                {% if receipt.payment.gateway_reference %}
-                <div class="mb-3">
-                    <p class="text-sm text-gray-600 dark:text-gray-400">Gateway Reference</p>
-                    <p class="text-midnight_text dark:text-white font-mono text-sm">{{ receipt.payment.gateway_reference }}</p>
-                </div>
-                {% endif %}
-                {% if receipt.payment.gateway_response %}
-                <div>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Transaction Response</p>
-                    <div class="bg-white dark:bg-semidark rounded p-3 text-xs font-mono overflow-x-auto">
-                        {{ receipt.payment.gateway_response|safe }}
-                    </div>
-                </div>
-                {% endif %}
-                {% if receipt.payment.notes %}
-                <div class="mt-3">
-                    <p class="text-sm text-gray-600 dark:text-gray-400">Notes</p>
-                    <p class="text-midnight_text dark:text-white text-sm">{{ receipt.payment.notes }}</p>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- Print Button (No Print) -->
-        <div class="text-center no-print">
-            <button onclick="window.print()" class="bg-primary hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold inline-flex items-center transition-colors">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-                </svg>
-                Print Receipt
-            </button>
-        </div>
-
-        <!-- Footer -->
-        <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 text-center text-sm text-gray-600 dark:text-gray-400">
-            <p>This is an automatically generated receipt. No signature required.</p>
-            <p class="mt-1">For questions or concerns, please contact our support team.</p>
-        </div>
-    </div>
+<!-- Actions Bar (not included in PDF) -->
+<div class="no-print flex items-center justify-between mb-6">
+  <a href="{% url 'payment_history' %}" class="inline-flex items-center text-primary hover:text-blue-700 dark:hover:text-blue-300 font-medium text-sm">
+    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+    </svg>
+    Back to Payment History
+  </a>
+  <button onclick="downloadReceiptPDF()"
+    class="inline-flex items-center gap-2 bg-primary hover:bg-blue-700 text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition-colors shadow-sm">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+    </svg>
+    Download PDF
+  </button>
 </div>
+
+<!-- ===================== RECEIPT DOCUMENT ===================== -->
+<div id="receipt-content" class="receipt-paper max-w-2xl mx-auto shadow-2xl rounded-2xl overflow-hidden">
+
+  <!-- ── TOP BRAND HEADER ── -->
+  <div style="background:linear-gradient(135deg,#1d4ed8 0%,#1e3a8a 100%);padding:28px 36px 22px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <!-- Brand -->
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+          <div style="width:38px;height:38px;background:rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;">
+            <svg width="22" height="22" fill="none" stroke="#ffffff" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+          </div>
+          <span style="color:#ffffff;font-size:20px;font-weight:800;letter-spacing:0.5px;">Psalms Real Estate</span>
+        </div>
+        <p style="color:rgba(255,255,255,0.6);font-size:11px;margin:0;padding-left:48px;">Official Payment Receipt</p>
+      </div>
+      <!-- PAID Stamp -->
+      <div class="paid-stamp">PAID</div>
+    </div>
+  </div>
+
+  <!-- ── RECEIPT NUMBER BAND ── -->
+  <div style="background:#f0f4ff;border-bottom:1px solid #e0e7ff;padding:12px 36px;display:flex;align-items:center;justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <svg width="14" height="14" fill="none" stroke="#6366f1" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+      </svg>
+      <span style="font-size:11px;color:#6366f1;font-weight:600;letter-spacing:1px;text-transform:uppercase;">Receipt No.</span>
+      <span style="font-size:13px;color:#1e1b4b;font-weight:700;font-family:monospace;">{{ receipt.receipt_number }}</span>
+    </div>
+    <span style="font-size:11px;color:#6b7280;">{{ receipt.issued_date|date:"d M Y, g:i A" }}</span>
+  </div>
+
+  <!-- ── AMOUNT PAID HERO ── -->
+  <div class="amount-stripe" style="padding:28px 36px;text-align:center;position:relative;">
+    <p style="color:rgba(255,255,255,0.75);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin:0 0 6px;">Amount Paid</p>
+    <p style="color:#ffffff;font-size:42px;font-weight:900;margin:0;line-height:1;letter-spacing:-1px;">
+      &#8358;{{ receipt.payment.amount|floatformat:2 }}
+    </p>
+    <div style="margin-top:14px;display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.15);border-radius:20px;padding:4px 14px;">
+      <svg width="13" height="13" fill="none" stroke="#ffffff" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+      </svg>
+      <span style="color:#ffffff;font-size:12px;font-weight:600;">Payment Successful</span>
+    </div>
+  </div>
+
+  <!-- ── ZIGZAG TEAR ── -->
+  <div style="height:14px;background:radial-gradient(circle at 7px -1px,transparent 7px,#f9fafb 7px) 0 0/14px 14px,radial-gradient(circle at 7px 15px,#f9fafb 7px,transparent 7px) 0 0/14px 14px;background-color:#16a34a;"></div>
+
+  <!-- ── DETAILS BODY ── -->
+  <div style="background:#f9fafb;padding:0 36px 28px;">
+
+    <!-- Payment Info -->
+    <div style="padding-top:22px;margin-bottom:18px;">
+      <p style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;font-weight:700;margin:0 0 10px;border-bottom:1px solid #e5e7eb;padding-bottom:8px;">Payment Information</p>
+      <table style="width:100%;border-collapse:collapse;">
+        <tbody>
+          <tr class="receipt-row">
+            <td>Payment Reference</td>
+            <td style="font-family:monospace;">{{ receipt.payment.payment_reference }}</td>
+          </tr>
+          <tr class="receipt-row">
+            <td>Payment Method</td>
+            <td>{{ receipt.payment.get_payment_method_display }}</td>
+          </tr>
+          <tr class="receipt-row">
+            <td>Payment Date</td>
+            <td>{{ receipt.payment.processed_at|default_if_none:receipt.payment.created_at|date:"d M Y, g:i A" }}</td>
+          </tr>
+          <tr class="receipt-row">
+            <td>Status</td>
+            <td>
+              <span style="display:inline-flex;align-items:center;gap:4px;background:#dcfce7;color:#15803d;border-radius:99px;padding:2px 10px;font-size:11px;font-weight:700;">
+                ✓ {{ receipt.payment.get_status_display }}
+              </span>
+            </td>
+          </tr>
+          {% if receipt.payment.gateway_reference %}
+          <tr class="receipt-row">
+            <td>Gateway Reference</td>
+            <td style="font-family:monospace;font-size:11px;word-break:break-all;">{{ receipt.payment.gateway_reference }}</td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Tenant Info -->
+    <div style="margin-bottom:18px;">
+      <p style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;font-weight:700;margin:0 0 10px;border-bottom:1px solid #e5e7eb;padding-bottom:8px;">Tenant Details</p>
+      <table style="width:100%;border-collapse:collapse;">
+        <tbody>
+          <tr class="receipt-row">
+            <td>Full Name</td>
+            <td>{{ receipt.issued_to.get_full_name }}</td>
+          </tr>
+          <tr class="receipt-row">
+            <td>Email Address</td>
+            <td>{{ receipt.issued_to.email }}</td>
+          </tr>
+          <tr class="receipt-row">
+            <td>Phone Number</td>
+            <td>{{ receipt.issued_to.phone_number|default:"—" }}</td>
+          </tr>
+          <tr class="receipt-row">
+            <td>User ID</td>
+            <td style="font-family:monospace;">{{ receipt.issued_to.user_id }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Property & Invoice -->
+    <div style="margin-bottom:18px;">
+      <p style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#9ca3af;font-weight:700;margin:0 0 10px;border-bottom:1px solid #e5e7eb;padding-bottom:8px;">Property &amp; Invoice</p>
+      <table style="width:100%;border-collapse:collapse;">
+        <tbody>
+          <tr class="receipt-row">
+            <td>Property</td>
+            <td>{{ receipt.payment.invoice.rental_agreement.rental_property.title }}</td>
+          </tr>
+          <tr class="receipt-row">
+            <td>Location</td>
+            <td>{{ receipt.payment.invoice.rental_agreement.rental_property.city }}, {{ receipt.payment.invoice.rental_agreement.rental_property.state }}</td>
+          </tr>
+          <tr class="receipt-row">
+            <td>Invoice Number</td>
+            <td style="font-family:monospace;">{{ receipt.payment.invoice.invoice_number }}</td>
+          </tr>
+          <tr class="receipt-row">
+            <td>Description</td>
+            <td>{{ receipt.payment.invoice.description|default:"Annual Rent Payment" }}</td>
+          </tr>
+          <tr class="receipt-row">
+            <td>Rental Period</td>
+            <td>{{ receipt.payment.invoice.rental_agreement.start_date|date:"d M Y" }} — {{ receipt.payment.invoice.rental_agreement.end_date|date:"d M Y" }}</td>
+          </tr>
+          <tr class="receipt-row">
+            <td>Landlord</td>
+            <td>{{ receipt.payment.invoice.rental_agreement.landlord.get_full_name }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Amount Summary Box -->
+    <div style="background:#ffffff;border:1.5px solid #e5e7eb;border-radius:12px;overflow:hidden;margin-bottom:8px;">
+      <table style="width:100%;border-collapse:collapse;">
+        <tbody>
+          <tr>
+            <td style="padding:10px 16px;font-size:12px;color:#6b7280;border-bottom:1px solid #f3f4f6;">Invoice Total</td>
+            <td style="padding:10px 16px;font-size:12px;font-weight:600;color:#111827;text-align:right;border-bottom:1px solid #f3f4f6;">&#8358;{{ receipt.payment.invoice.amount|floatformat:2 }}</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 16px;font-size:12px;color:#6b7280;border-bottom:1px solid #f3f4f6;">Amount Previously Paid</td>
+            <td style="padding:10px 16px;font-size:12px;font-weight:600;color:#059669;text-align:right;border-bottom:1px solid #f3f4f6;">&#8358;{{ receipt.payment.invoice.paid_amount|floatformat:2 }}</td>
+          </tr>
+          <tr style="background:#f0fdf4;">
+            <td style="padding:12px 16px;font-size:14px;font-weight:700;color:#15803d;">Amount Paid This Transaction</td>
+            <td style="padding:12px 16px;font-size:18px;font-weight:800;color:#15803d;text-align:right;">&#8358;{{ receipt.payment.amount|floatformat:2 }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div><!-- end body -->
+
+  <!-- ── FOOTER ── -->
+  <div style="background:#1e1b4b;padding:18px 36px;text-align:center;">
+    <p style="color:rgba(255,255,255,0.5);font-size:10px;margin:0;letter-spacing:0.3px;">
+      This is a computer-generated receipt and requires no signature. &nbsp;·&nbsp; Psalms Real Estate &nbsp;·&nbsp; Issued {{ receipt.issued_date|date:"d M Y" }}
+    </p>
+  </div>
+
+</div><!-- end receipt-content -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+function downloadReceiptPDF() {
+  const noprint = document.querySelectorAll('.no-print');
+  noprint.forEach(el => el.style.display = 'none');
+
+  const element = document.getElementById('receipt-content');
+  const opt = {
+    margin: [8, 8, 8, 8],
+    filename: 'Receipt-{{ receipt.receipt_number }}.pdf',
+    image: { type: 'jpeg', quality: 0.99 },
+    html2canvas: { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+  html2pdf().set(opt).from(element).save().then(function() {
+    noprint.forEach(el => el.style.display = '');
+  });
+}
+</script>
 {% endblock %}

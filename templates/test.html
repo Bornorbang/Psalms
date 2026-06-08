@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fintech Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #6a11cb;
+            --secondary-color: #2575fc;
+            --background-color: #f0f2f5;
+            --card-background: #ffffff;
+            --text-color: #333;
+            --text-light: #f8f9fa;
+            --border-color: #e9ecef;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-mode {
+            --background-color: #121212;
+            --card-background: #1e1e1e;
+            --text-color: #e0e0e0;
+            --border-color: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--text-light);
+            height: 100vh;
+            padding: 20px;
+            position: fixed;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h1 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .sidebar nav ul {
+            list-style: none;
+        }
+
+        .sidebar nav ul li {
+            margin-bottom: 20px;
+        }
+
+        .sidebar nav ul li a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar nav ul li a:hover, .sidebar nav ul li a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar .theme-switcher {
+            margin-top: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .sidebar .theme-switcher button {
+            background: none;
+            border: 1px solid var(--text-light);
+            color: var(--text-light);
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .sidebar .theme-switcher button:hover {
+            background-color: var(--text-light);
+            color: var(--primary-color);
+        }
+
+        .main-content {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            padding: 30px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        header h2 {
+            font-size: 2rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .card {
+            background-color: var(--card-background);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .summary-card {
+            display: flex;
+            align-items: center;
+        }
+
+        .summary-card .icon {
+            font-size: 2rem;
+            padding: 15px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .summary-card.balance .icon { background-color: #e0f7fa; color: #00796b; }
+        .summary-card.income .icon { background-color: #e8f5e9; color: #388e3c; }
+        .summary-card.expense .icon { background-color: #ffebee; color: #d32f2f; }
+        .summary-card.savings .icon { background-color: #fff3e0; color: #f57c00; }
+
+        .summary-card h3 {
+            font-size: 1rem;
+            color: #888;
+        }
+
+        .summary-card p {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .charts {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .transactions table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .transactions th, .transactions td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .transactions th {
+            font-weight: 600;
+        }
+
+        .status {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+
+        .status.completed { background-color: #e8f5e9; color: #388e3c; }
+        .status.pending { background-color: #fff3e0; color: #f57c00; }
+        .status.failed { background-color: #ffebee; color: #d32f2f; }
+
+        @media (max-width: 1200px) {
+            .charts {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <h1>FinDash</h1>
+        <nav>
+            <ul>
+                <li><a href="#" class="active"><span>&#128200;</span> Dashboard</a></li>
+                <li><a href="#"><span>&#128179;</span> Transactions</a></li>
+                <li><a href="#"><span>&#128181;</span> Accounts</a></li>
+                <li><a href="#"><span>&#128176;</span> Budgets</a></li>
+                <li><a href="#"><span>&#128202;</span> Reports</a></li>
+                <li><a href="#"><span>&#9881;</span> Settings</a></li>
+            </ul>
+        </nav>
+        <div class="theme-switcher">
+            <button id="theme-toggle">Toggle Theme</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header>
+            <h2>Dashboard</h2>
+            <div class="user-profile">
+                <img src="https://i.pravatar.cc/40" alt="User Avatar">
+                <span>Welcome, Alex!</span>
+            </div>
+        </header>
+
+        <section class="summary-cards">
+            <div class="card summary-card balance">
+                <div class="icon">&#36;</div>
+                <div>
+                    <h3>Total Balance</h3>
+                    <p>$50,250.75</p>
+                </div>
+            </div>
+            <div class="card summary-card income">
+                <div class="icon">&#8593;</div>
+                <div>
+                    <h3>Monthly Income</h3>
+                    <p>$8,500.00</p>
+                </div>
+            </div>
+            <div class="card summary-card expense">
+                <div class="icon">&#8595;</div>
+                <div>
+                    <h3>Monthly Expenses</h3>
+                    <p>$3,250.50</p>
+                </div>
+            </div>
+            <div class="card summary-card savings">
+                <div class="icon">&#128142;</div>
+                <div>
+                    <h3>Total Savings</h3>
+                    <p>$15,000.00</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="charts">
+            <div class="card">
+                <h3>Expense Overview</h3>
+                <canvas id="expenseChart"></canvas>
+            </div>
+            <div class="card">
+                <h3>Expense Categories</h3>
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </section>
+
+        <section class="card transactions">
+            <h3>Recent Transactions</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Netflix Subscription</td>
+                        <td>2026-05-23</td>
+                        <td>-$15.99</td>
+                        <td><span class="status completed">Completed</span></td>
+                    </tr>
+                    <tr>
+                        <td>Salary Deposit</td>
+                        <td>2026-05-20</td>
+                        <td>+$5,000.00</td>
+                        <td><span class="status completed">Completed</span></td>
+                    </tr>
+                    <tr>
+                        <td>Grocery Shopping</td>
+                        <td>2026-05-19</td>
+                        <td>-$124.50</td>
+                        <td><span class="status completed">Completed</span></td>
+                    </tr>
+                    <tr>
+                        <td>Online Transfer to Jane</td>
+                        <td>2026-05-18</td>
+                        <td>-$500.00</td>
+                        <td><span class="status pending">Pending</span></td>
+                    </tr>
+                    <tr>
+                        <td>ATM Withdrawal</td>
+                        <td>2026-05-17</td>
+                        <td>-$100.00</td>
+                        <td><span class="status completed">Completed</span></td>
+                    </tr>
+                     <tr>
+                        <td>Stock Purchase - AAPL</td>
+                        <td>2026-05-16</td>
+                        <td>-$1500.00</td>
+                        <td><span class="status failed">Failed</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+</body>
+</html>

@@ -1,5 +1,6 @@
 {% extends "dashboard/base_dashboard.html" %}
 {% load static %}
+{% load humanize %}
 
 {% block dashboard_title %}Invoice Details{% endblock %}
 
@@ -7,6 +8,58 @@
 <p class="text-gray-600 dark:text-gray-400">
     View invoice details and make payment
 </p>
+{% endblock %}
+
+{% block sidebar_nav %}
+<a href="{% url 'tenant_dashboard' %}" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
+    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+    </svg>
+    Dashboard
+</a>
+
+<a href="{% url 'properties_list' %}" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
+    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+    </svg>
+    Properties
+</a>
+
+<a href="{% url 'tenant_invoices' %}" class="flex items-center px-4 py-3 text-primary bg-blue-50 dark:bg-blue-900/20 rounded-lg font-medium">
+    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+    </svg>
+    My Invoices
+</a>
+
+<a href="{% url 'payment_history' %}" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
+    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+    </svg>
+    Payment History
+</a>
+
+<a href="{% url 'messages_inbox' %}" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
+    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+    </svg>
+    Messages
+</a>
+
+<div class="pt-6 mt-6 border-t border-gray-200 dark:border-gray-700">
+    <a href="{% url 'profile_view' %}" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
+        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+        </svg>
+        My Profile
+    </a>
+    <a href="{% url 'signout' %}" class="flex items-center px-4 py-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg">
+        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+        </svg>
+        Sign Out
+    </a>
+</div>
 {% endblock %}
 
 {% block dashboard_content %}
@@ -26,7 +79,7 @@
     <div class="bg-gradient-to-r from-primary to-blue-600 text-white px-8 py-6">
         <div class="flex justify-between items-start">
             <div>
-                <h2 class="text-2xl font-bold mb-2">Invoice {{ invoice.invoice_number }}</h2>
+                <h2 class="text-2xl font-bold text-white mb-2">Invoice {{ invoice.invoice_number }}</h2>
                 <p class="text-blue-100">Issued: {{ invoice.issue_date|date:"F d, Y" }}</p>
                 <p class="text-blue-100">Due: {{ invoice.due_date|date:"F d, Y" }}</p>
             </div>
@@ -92,7 +145,7 @@
             <div class="bg-gray-50 dark:bg-darklight rounded-lg p-4">
                 <div class="mb-4">
                     <p class="text-sm text-gray-600 dark:text-gray-400">Description</p>
-                    <p class="text-midnight_text dark:text-white">{{ invoice.description|default:"Monthly Rent Payment" }}</p>
+                    <p class="text-midnight_text dark:text-white">{{ invoice.description|default:"Annual Rent Payment"|linebreaksbr }}</p>
                 </div>
                 {% if invoice.notes %}
                 <div>
@@ -108,46 +161,40 @@
             <div class="space-y-3">
                 <div class="flex justify-between items-center">
                     <span class="text-midnight_text dark:text-white">Invoice Amount</span>
-                    <span class="text-lg font-semibold text-midnight_text dark:text-white">${{ invoice.amount|floatformat:2 }}</span>
+                    <span class="text-lg font-semibold text-midnight_text dark:text-white">₦{{ invoice.amount|floatformat:2 }}</span>
                 </div>
                 <div class="flex justify-between items-center">
                     <span class="text-midnight_text dark:text-white">Amount Paid</span>
-                    <span class="text-lg font-semibold text-green-600">${{ invoice.paid_amount|floatformat:2 }}</span>
+                    <span class="text-lg font-semibold text-green-600">₦{{ invoice.paid_amount|floatformat:2 }}</span>
                 </div>
                 <div class="border-t border-blue-300 dark:border-blue-600 pt-3">
                     <div class="flex justify-between items-center">
                         <span class="text-lg font-bold text-midnight_text dark:text-white">Balance Due</span>
                         <span class="text-2xl font-bold {% if invoice.balance > 0 %}text-red-600{% else %}text-green-600{% endif %}">
-                            ${{ invoice.balance|floatformat:2 }}
+                            ₦{{ invoice.balance|floatformat:2 }}
                         </span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Payment Simulation (Only if balance > 0) -->
+        <!-- Payment Section (Only if balance > 0) -->
         {% if invoice.balance > 0 and invoice.status != 'CANCELLED' %}
-        <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-6 mb-8">
-            <h3 class="text-lg font-semibold text-midnight_text dark:text-white mb-4">Make Payment</h3>
+        <div class="bg-gradient-to-br from-blue-50 to-green-50 dark:from-blue-900/20 dark:to-green-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-6 mb-8">
+            <h3 class="text-lg font-semibold text-midnight_text dark:text-white mb-2">Make Payment</h3>
             <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Payment gateway integration coming soon. For now, use the buttons below to simulate payment status.
+                Pay securely via Paystack. You will be redirected to complete your payment.
             </p>
-            <form method="post" action="{% url 'payment_simulate' invoice.invoice_number %}">
+            <form method="post" action="{% url 'payment_initiate' invoice.invoice_number %}">
                 {% csrf_token %}
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <button type="submit" name="action" value="success" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors inline-flex items-center justify-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                        </svg>
-                        Mark Payment as Success
-                    </button>
-                    <button type="submit" name="action" value="failure" class="flex-1 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors inline-flex items-center justify-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                        Mark Payment as Failed
-                    </button>
-                </div>
+                <button type="submit"
+                    class="inline-flex items-center gap-3 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white font-semibold px-8 py-3 rounded-xl transition-colors shadow-md">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                    </svg>
+                    Pay ₦{{ invoice.balance|floatformat:0|intcomma }}
+                </button>
             </form>
         </div>
         {% endif %}
@@ -173,7 +220,7 @@
                         <tr>
                             <td class="px-4 py-3 text-sm text-midnight_text dark:text-white font-medium">{{ payment.payment_reference }}</td>
                             <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{{ payment.created_at|date:"M d, Y H:i" }}</td>
-                            <td class="px-4 py-3 text-sm text-midnight_text dark:text-white">${{ payment.amount|floatformat:2 }}</td>
+                            <td class="px-4 py-3 text-sm text-midnight_text dark:text-white">₦{{ payment.amount|floatformat:2 }}</td>
                             <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{{ payment.get_payment_method_display }}</td>
                             <td class="px-4 py-3">
                                 {% if payment.status == 'SUCCESS' %}

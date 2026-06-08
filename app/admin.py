@@ -5,7 +5,8 @@ from django.utils.html import format_html
 from .models import (
     User, Property, PropertyImage, 
     PropertyDocument, Amenity, PropertyAmenity,
-    RentalAgreement, Invoice, Payment, PaymentReceipt
+    RentalAgreement, Invoice, Payment, PaymentReceipt,
+    SiteSettings, BroadcastMessage
 )
 
 
@@ -264,7 +265,7 @@ class RentalAgreementAdmin(admin.ModelAdmin):
             'fields': ('rental_property', 'landlord', 'tenant', 'agent')
         }),
         ('Agreement Terms', {
-            'fields': ('start_date', 'end_date', 'monthly_rent', 'security_deposit', 'currency', 'rent_due_day')
+            'fields': ('start_date', 'end_date', 'monthly_rent', 'security_deposit', 'currency')
         }),
         ('Status', {
             'fields': ('status', 'notes')
@@ -362,4 +363,34 @@ class PaymentReceiptAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+
+
+@admin.register(SiteSettings)
+class SiteSettingsAdmin(admin.ModelAdmin):
+    """Singleton admin for site-wide settings"""
+    fieldsets = (
+        ('Contact Information', {
+            'fields': ('contact_number',),
+            'description': 'This number will be shown as the "Call" button on all property detail pages.'
+        }),
+    )
+
+    def has_add_permission(self, request):
+        return not SiteSettings.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(BroadcastMessage)
+class BroadcastMessageAdmin(admin.ModelAdmin):
+    list_display = ['subject', 'recipient_category', 'sent_by', 'created_at']
+    list_filter = ['recipient_category', 'created_at']
+    search_fields = ['subject', 'body']
+    readonly_fields = ['sent_by', 'created_at']
+
+    def save_model(self, request, obj, form, change):
+        if not obj.pk:
+            obj.sent_by = request.user
+        super().save_model(request, obj, form, change)
 

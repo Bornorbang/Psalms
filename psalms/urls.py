@@ -49,6 +49,9 @@ urlpatterns = [
     path('dashboard/switch-role/<str:role>/', views.switch_role, name='switch_role'),
     path('dashboard/tenant/', views.tenant_dashboard, name='tenant_dashboard'),
     path('dashboard/landlord/', views.landlord_dashboard, name='landlord_dashboard'),
+    path('dashboard/landlord/properties/', views.landlord_properties, name='landlord_properties'),
+    path('dashboard/landlord/tenants/', views.landlord_tenants, name='landlord_tenants'),
+    path('dashboard/landlord/payments/', views.landlord_payments, name='landlord_payments'),
     path('dashboard/agent/', views.agent_dashboard, name='agent_dashboard'),
     path('dashboard/admin/', views.admin_dashboard, name='admin_dashboard'),
     
@@ -61,9 +64,17 @@ urlpatterns = [
     # Payment & Invoice URLs
     path('dashboard/invoices/', views.tenant_invoices, name='tenant_invoices'),
     path('dashboard/invoices/<str:invoice_number>/', views.invoice_detail, name='invoice_detail'),
-    path('dashboard/invoices/<str:invoice_number>/pay/', views.payment_simulate, name='payment_simulate'),
+    path('dashboard/invoices/<str:invoice_number>/pay/', views.payment_initiate, name='payment_initiate'),
     path('dashboard/payments/', views.payment_history, name='payment_history'),
+    path('dashboard/payments/callback/', views.payment_callback, name='payment_callback'),
     path('dashboard/receipts/<str:receipt_number>/', views.download_receipt, name='download_receipt'),
+
+    # Messages
+    path('dashboard/messages/', views.messages_inbox, name='messages_inbox'),
+    path('dashboard/messages/send/', views.messages_send, name='messages_send'),
+
+    # Paystack Webhook
+    path('webhooks/paystack/', views.paystack_webhook, name='paystack_webhook'),
     
     # Legacy URLs for backward compatibility
     path('signin/', views.signin, name='signin_legacy'),

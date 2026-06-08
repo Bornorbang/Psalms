@@ -37,10 +37,10 @@ class UserRegistrationForm(UserCreationForm):
     
     phone_number = forms.CharField(
         max_length=20,
-        required=False,
+        required=True,
         widget=forms.TextInput(attrs={
             'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent',
-            'placeholder': 'Phone Number (Optional)'
+            'placeholder': 'Phone Number'
         })
     )
     
@@ -48,7 +48,6 @@ class UserRegistrationForm(UserCreationForm):
         choices=[
             (User.Role.TENANT, 'Tenant - Looking to rent'),
             (User.Role.LANDLORD, 'Landlord - Property owner'),
-            (User.Role.AGENT, 'Agent - Real estate professional'),
         ],
         widget=forms.Select(attrs={
             'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent'

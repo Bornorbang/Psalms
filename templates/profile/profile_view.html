@@ -215,14 +215,7 @@
                 {% endif %}
 
                 <!-- Resend Verification (if not verified and own profile) -->
-                {% if is_own_profile and not profile_user.email_verified %}
-                    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
-                        <p class="text-blue-800 dark:text-blue-200 mb-2">Your email is not verified.</p>
-                        <a href="{% url 'resend_verification' %}" class="text-primary hover:underline font-medium">
-                            Click here to resend verification email
-                        </a>
-                    </div>
-                {% endif %}
+
             </div>
         </div>
     </div>

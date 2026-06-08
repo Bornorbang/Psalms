@@ -8,12 +8,20 @@ from django.conf import settings
 from django.urls import reverse
 from django.core.paginator import Paginator
 from django.db.models import Q, Sum
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
 import json
+import logging
 import os
 import uuid
+import hmac
+import hashlib
+import requests as http_client
 from datetime import timedelta
+
+logger = logging.getLogger(__name__)
 from .forms import UserRegistrationForm, UserLoginForm, CustomPasswordResetForm, CustomSetPasswordForm, UserProfileForm, PropertyForm, PropertyImageFormSet
-from .models import User, EmailVerificationToken, Property, RentalAgreement, Invoice, Payment, PaymentReceipt
+from .models import User, EmailVerificationToken, Property, RentalAgreement, Invoice, Payment, PaymentReceipt, SiteSettings, BroadcastMessage
 from .decorators import email_verified_required, tenant_required, landlord_required, agent_required, super_admin_required
 
 def load_json_data(filename):
@@ -60,6 +68,9 @@ def properties_list(request):
     category = request.GET.get('category', '')
     listing_type = request.GET.get('status', '')  # Maps to listing_type (RENT/SALE)
     sort_order = request.GET.get('sort', 'none')
+    bedrooms = request.GET.get('bedrooms', '')
+    bathrooms = request.GET.get('bathrooms', '')
+    price_range = request.GET.get('price_range', '')
     
     # Apply filters
     if keyword:
@@ -70,7 +81,11 @@ def properties_list(request):
         )
     
     if location:
-        properties = properties.filter(city__iexact=location)
+        properties = properties.filter(
+            Q(city__icontains=location) |
+            Q(state__icontains=location) |
+            Q(address__icontains=location)
+        )
     
     if category:
         # Map category to PropertyType
@@ -88,11 +103,28 @@ def properties_list(request):
             properties = properties.filter(property_type=property_type)
     
     if listing_type:
-        # Map status filter to listing_type
-        if listing_type.upper() in ['RENT', 'SALE', 'BUY']:
-            type_val = 'RENT' if listing_type.upper() in ['RENT'] else 'SALE'
-            properties = properties.filter(listing_type=type_val)
-    
+        if listing_type.upper() in ['RENT', 'SALE']:
+            properties = properties.filter(listing_type=listing_type.upper())
+
+    if bedrooms:
+        try:
+            properties = properties.filter(bedrooms__gte=int(bedrooms))
+        except ValueError:
+            pass
+
+    if bathrooms:
+        try:
+            properties = properties.filter(bathrooms__gte=int(bathrooms))
+        except ValueError:
+            pass
+
+    if price_range:
+        try:
+            low, high = price_range.split('-')
+            properties = properties.filter(price__gte=int(low), price__lte=int(high))
+        except (ValueError, AttributeError):
+            pass
+
     # Apply sorting
     if sort_order == 'asc':
         properties = properties.order_by('title')
@@ -117,15 +149,11 @@ def properties_list(request):
     categories = [
         {'value': 'apartment', 'label': 'Apartment'},
         {'value': 'house', 'label': 'House'},
-        {'value': 'villa', 'label': 'Villa'},
-        {'value': 'office', 'label': 'Office'},
-        {'value': 'shop', 'label': 'Shop'},
-        {'value': 'warehouse', 'label': 'Warehouse'},
-        {'value': 'land', 'label': 'Land'},
+        # Add more property types here when needed
     ]
     statuses = [
-        {'value': 'Rent', 'label': 'For Rent'},
-        {'value': 'Sale', 'label': 'For Sale'},
+        {'value': 'RENT', 'label': 'For Rent'},
+        {'value': 'SALE', 'label': 'For Sale'},
     ]
     
     context = {
@@ -169,6 +197,7 @@ def property_detail(request, slug):
         'property': property_obj,
         'amenities': amenities,
         'similar_properties': similar_properties,
+        'site_settings': SiteSettings.get_settings(),
     }
     return render(request, 'property_detail.html', context)
 
@@ -230,34 +259,14 @@ def signup(request):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.is_active = True  # User can login immediately
-            user.email_verified = False  # But email not verified yet
+            user.is_active = True
+            user.email_verified = True
             user.save()
-            
-            # Create email verification token
-            token = str(uuid.uuid4())
-            verification_token = EmailVerificationToken.objects.create(
-                user=user,
-                token=token,
-                expires_at=timezone.now() + timedelta(hours=24)
-            )
-            
-            # Send verification email
-            verification_url = request.build_absolute_uri(
-                reverse('verify_email', kwargs={'token': token})
-            )
-            send_mail(
-                subject='Verify your email - Psalms Real Estate',
-                message=f'Hi {user.first_name},\n\nPlease verify your email by clicking the link below:\n{verification_url}\n\nThis link will expire in 24 hours.',
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-                fail_silently=True,
-            )
             
             # Log the user in
             login(request, user)
-            messages.success(request, f'Welcome, {user.first_name}! Please check your email to verify your account.')
-            return redirect('home')
+            messages.success(request, f'Welcome, {user.first_name}! Your account has been created successfully.')
+            return redirect('dashboard_redirect')
         else:
             for field, errors in form.errors.items():
                 for error in errors:
@@ -543,8 +552,35 @@ def switch_role(request, role):
 @tenant_required
 def tenant_dashboard(request):
     """Tenant dashboard view"""
+    user = request.user
+
+    # Active rental agreements — only show once tenant has made a successful payment
+    active_agreements = RentalAgreement.objects.filter(
+        tenant=user, status='ACTIVE',
+        invoices__status='PAID'
+    ).distinct().select_related('rental_property')
+
+    # Invoice stats
+    all_invoices = Invoice.objects.filter(tenant=user)
+    pending_invoices = all_invoices.filter(status__in=['SENT', 'OVERDUE'])
+    overdue_invoices = all_invoices.filter(status='OVERDUE')
+    paid_invoices = all_invoices.filter(status='PAID')
+    total_due = pending_invoices.aggregate(total=Sum('amount'))['total'] or 0
+
+    # Recent payments
+    recent_payments = Payment.objects.filter(
+        tenant=user, status='SUCCESS'
+    ).select_related('invoice', 'invoice__rental_agreement__rental_property').order_by('-created_at')[:5]
+
     context = {
-        'user': request.user,
+        'user': user,
+        'active_agreements': active_agreements,
+        'active_agreements_count': active_agreements.count(),
+        'pending_invoices_count': pending_invoices.count(),
+        'overdue_invoices_count': overdue_invoices.count(),
+        'paid_invoices_count': paid_invoices.count(),
+        'total_due': total_due,
+        'recent_payments': recent_payments,
     }
     return render(request, 'dashboard/tenant_dashboard.html', context)
 
@@ -552,8 +588,50 @@ def tenant_dashboard(request):
 @landlord_required
 def landlord_dashboard(request):
     """Landlord dashboard view"""
+    user = request.user
+
+    # Active rental agreements (this landlord) — only after tenant has paid
+    active_agreements = RentalAgreement.objects.filter(
+        landlord=user, status='ACTIVE',
+        invoices__status='PAID'
+    ).distinct().select_related('rental_property', 'tenant')
+
+    # Payment stats for this landlord's properties
+    received_payments = Payment.objects.filter(
+        invoice__rental_agreement__landlord=user,
+        status='SUCCESS'
+    )
+    total_received = received_payments.aggregate(total=Sum('amount'))['total'] or 0
+
+    # Pending & overdue invoices for their properties
+    pending_invoices = Invoice.objects.filter(
+        rental_agreement__landlord=user,
+        status__in=['SENT', 'OVERDUE']
+    )
+    overdue_invoices = Invoice.objects.filter(
+        rental_agreement__landlord=user,
+        status='OVERDUE'
+    )
+    total_pending = pending_invoices.aggregate(total=Sum('amount'))['total'] or 0
+
+    # Recent payments received
+    recent_payments = Payment.objects.filter(
+        invoice__rental_agreement__landlord=user,
+        status='SUCCESS'
+    ).select_related(
+        'invoice', 'tenant',
+        'invoice__rental_agreement__rental_property'
+    ).order_by('-created_at')[:5]
+
     context = {
-        'user': request.user,
+        'user': user,
+        'active_agreements': active_agreements,
+        'active_tenants_count': active_agreements.count(),
+        'total_received': total_received,
+        'pending_invoices_count': pending_invoices.count(),
+        'overdue_invoices_count': overdue_invoices.count(),
+        'total_pending': total_pending,
+        'recent_payments': recent_payments,
     }
     return render(request, 'dashboard/landlord_dashboard.html', context)
 
@@ -567,19 +645,120 @@ def agent_dashboard(request):
     return render(request, 'dashboard/agent_dashboard.html', context)
 
 
+@landlord_required
+def landlord_properties(request):
+    """Properties assigned to this landlord by admin/agent"""
+    user = request.user
+    from .models import Property as PropertyModel
+    properties = PropertyModel.objects.filter(
+        landlord=user
+    ).prefetch_related('images').order_by('-created_at')
+
+    return render(request, 'dashboard/landlord_properties.html', {
+        'properties': properties,
+        'page_title': 'My Properties',
+        'total_count': properties.count(),
+    })
+
+
+@landlord_required
+def landlord_tenants(request):
+    """All tenants for this landlord, across all agreements"""
+    user = request.user
+
+    agreements = RentalAgreement.objects.filter(
+        landlord=user,
+        invoices__status='PAID'
+    ).distinct().select_related('tenant', 'rental_property').order_by(
+        '-status', '-start_date'
+    )
+
+    active_count = agreements.filter(status='ACTIVE').count()
+    total_count = agreements.count()
+
+    return render(request, 'dashboard/landlord_tenants.html', {
+        'agreements': agreements,
+        'active_count': active_count,
+        'total_count': total_count,
+        'page_title': 'My Tenants',
+    })
+
+
+@landlord_required
+def landlord_payments(request):
+    """Payments received — landlord-specific view"""
+    user = request.user
+
+    payments = Payment.objects.filter(
+        invoice__rental_agreement__landlord=user,
+        status='SUCCESS',
+    ).select_related(
+        'invoice', 'tenant',
+        'invoice__rental_agreement',
+        'invoice__rental_agreement__rental_property',
+    ).order_by('-processed_at', '-created_at')
+
+    total_amount = payments.aggregate(total=Sum('amount'))['total'] or 0
+    total_count = payments.count()
+
+    pending_invoices_count = Invoice.objects.filter(
+        rental_agreement__landlord=user,
+        status__in=['SENT', 'OVERDUE']
+    ).count()
+
+    paginator = Paginator(payments, 15)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'dashboard/landlord_payments.html', {
+        'payments': page_obj,
+        'page_obj': page_obj,
+        'total_amount': total_amount,
+        'total_count': total_count,
+        'pending_invoices_count': pending_invoices_count,
+        'page_title': 'Payments Received',
+    })
+
+
 @super_admin_required
 def admin_dashboard(request):
     """Admin dashboard view"""
-    # Get user statistics - count by primary role
+    # User statistics
     total_users = User.objects.count()
     tenant_count = User.objects.filter(role=User.Role.TENANT).count()
     landlord_count = User.objects.filter(role=User.Role.LANDLORD).count()
     agent_count = User.objects.filter(role=User.Role.AGENT).count()
-    
-    # Get multi-role statistics
+
     multi_role_users = User.objects.filter(roles__isnull=False).exclude(roles=[])
-    multi_role_count = sum(1 for user in multi_role_users if len(user.roles) > 1)
-    
+    multi_role_count = sum(1 for u in multi_role_users if len(u.roles) > 1)
+
+    unverified_users = User.objects.filter(email_verified=False).count()
+
+    # Property stats
+    from .models import Property as PropertyModel
+    active_properties_count = PropertyModel.objects.filter(status='AVAILABLE').count()
+    total_properties_count = PropertyModel.objects.count()
+
+    # Rental stats
+    active_rentals_count = RentalAgreement.objects.filter(status='ACTIVE').count()
+
+    # Financial stats
+    total_received = Payment.objects.filter(status='SUCCESS').aggregate(
+        total=Sum('amount')
+    )['total'] or 0
+    pending_invoices_count = Invoice.objects.filter(status__in=['SENT', 'OVERDUE']).count()
+    amount_pending = Invoice.objects.filter(status__in=['SENT', 'OVERDUE']).aggregate(
+        total=Sum('amount')
+    )['total'] or 0
+
+    # Recent payments (all)
+    recent_payments = Payment.objects.filter(
+        status='SUCCESS'
+    ).select_related(
+        'invoice', 'tenant',
+        'invoice__rental_agreement__rental_property'
+    ).order_by('-processed_at', '-created_at')[:5]
+
     context = {
         'user': request.user,
         'total_users': total_users,
@@ -587,6 +766,14 @@ def admin_dashboard(request):
         'landlord_count': landlord_count,
         'agent_count': agent_count,
         'multi_role_count': multi_role_count,
+        'unverified_users': unverified_users,
+        'active_properties_count': active_properties_count,
+        'total_properties_count': total_properties_count,
+        'active_rentals_count': active_rentals_count,
+        'total_received': total_received,
+        'pending_invoices_count': pending_invoices_count,
+        'amount_pending': amount_pending,
+        'recent_payments': recent_payments,
     }
     return render(request, 'dashboard/admin_dashboard.html', context)
 
@@ -856,72 +1043,245 @@ def invoice_detail(request, invoice_number):
 
 @login_required
 @tenant_required
-def payment_simulate(request, invoice_number):
-    """
-    Simulate payment (Success or Failure) - Placeholder for Paystack integration
-    """
+def payment_initiate(request, invoice_number):
+    """Initiate a Paystack payment for an invoice"""
     invoice = get_object_or_404(Invoice, invoice_number=invoice_number, tenant=request.user)
-    
+
+    if invoice.balance <= 0 or invoice.status == 'CANCELLED':
+        messages.error(request, 'This invoice cannot be paid.')
+        return redirect('invoice_detail', invoice_number=invoice.invoice_number)
+
     if request.method == 'POST':
-        action = request.POST.get('action')  # 'success' or 'failure'
         amount = invoice.balance
-        
-        # Create payment record
-        payment = Payment.objects.create(
-            invoice=invoice,
-            tenant=request.user,
-            amount=amount,
-            currency=invoice.currency,
-            payment_method=Payment.PaymentMethod.PAYSTACK,
-            status=Payment.PaymentStatus.PENDING,
-            notes=f'Simulated payment - {action}'
+        # Paystack requires amount in kobo (1 NGN = 100 kobo)
+        amount_kobo = int(amount * 100)
+
+        # Unique reference tied to this invoice attempt
+        payment_ref = f'PSK-{invoice_number}-{uuid.uuid4().hex[:8].upper()}'
+
+        headers = {
+            'Authorization': f'Bearer {settings.PAYSTACK_SECRET_KEY}',
+            'Content-Type': 'application/json',
+        }
+        callback_url = request.build_absolute_uri(reverse('payment_callback'))
+
+        payload = {
+            'email': request.user.email,
+            'amount': amount_kobo,
+            'reference': payment_ref,
+            'callback_url': callback_url,
+            'currency': invoice.currency,
+            'metadata': {
+                'invoice_number': invoice.invoice_number,
+                'tenant_id': str(request.user.id),
+                'tenant_name': request.user.get_full_name(),
+                'property': invoice.rental_agreement.rental_property.title,
+            },
+        }
+
+        try:
+            resp = http_client.post(
+                'https://api.paystack.co/transaction/initialize',
+                json=payload,
+                headers=headers,
+                timeout=30,
+            )
+            data = resp.json()
+
+            if data.get('status') and data.get('data'):
+                auth_url = data['data']['authorization_url']
+
+                # Create a pending Payment record
+                Payment.objects.create(
+                    invoice=invoice,
+                    tenant=request.user,
+                    amount=amount,
+                    currency=invoice.currency,
+                    payment_method=Payment.PaymentMethod.PAYSTACK,
+                    status=Payment.PaymentStatus.PENDING,
+                    gateway_reference=payment_ref,
+                    gateway_response=data['data'],
+                    notes='Paystack payment initiated',
+                )
+
+                return redirect(auth_url)
+            else:
+                messages.error(
+                    request,
+                    'Could not initiate payment. Please try again or contact support.'
+                )
+        except Exception:
+            messages.error(request, 'Payment gateway error. Please try again.')
+
+    return redirect('invoice_detail', invoice_number=invoice.invoice_number)
+
+
+@login_required
+def payment_callback(request):
+    """Handle Paystack redirect after payment"""
+    reference = request.GET.get('reference') or request.GET.get('trxref')
+
+    if not reference:
+        messages.error(request, 'Invalid payment callback.')
+        return redirect('tenant_invoices')
+
+    headers = {'Authorization': f'Bearer {settings.PAYSTACK_SECRET_KEY}'}
+
+    try:
+        resp = http_client.get(
+            f'https://api.paystack.co/transaction/verify/{reference}',
+            headers=headers,
+            timeout=30,
         )
-        
-        if action == 'success':
-            # Simulate successful payment
+        data = resp.json()
+
+        if not (data.get('status') and data.get('data')):
+            messages.error(request, 'Could not verify payment.')
+            return redirect('tenant_invoices')
+
+        transaction = data['data']
+        txn_status = transaction.get('status')
+
+        try:
+            payment = Payment.objects.get(gateway_reference=reference)
+        except Payment.DoesNotExist:
+            messages.error(request, 'Payment record not found.')
+            return redirect('tenant_invoices')
+
+        if payment.tenant != request.user:
+            messages.error(request, 'Unauthorized access.')
+            return redirect('tenant_invoices')
+
+        invoice_number = payment.invoice.invoice_number
+
+        if txn_status == 'success' and payment.status != Payment.PaymentStatus.SUCCESS:
             payment.status = Payment.PaymentStatus.SUCCESS
             payment.processed_at = timezone.now()
-            payment.gateway_reference = f'SIM-{payment.payment_reference}'
-            payment.gateway_response = {
-                'status': 'success',
-                'message': 'Payment simulated successfully',
-                'reference': payment.payment_reference,
-                'simulated': True
-            }
+            payment.gateway_response = transaction
             payment.save()
-            
-            # Create receipt
-            PaymentReceipt.objects.create(
+
+            receipt = PaymentReceipt.objects.create(
                 payment=payment,
-                issued_to=request.user
+                issued_to=request.user,
             )
-            
+            _send_payment_success_email(payment, receipt)
             messages.success(
                 request,
-                f'Payment of {invoice.currency} {amount} successful! Receipt generated.'
+                f'Payment successful! Receipt #{receipt.receipt_number} has been issued.'
             )
-            return redirect('invoice_detail', invoice_number=invoice.invoice_number)
-        
-        elif action == 'failure':
-            # Simulate failed payment
-            payment.status = Payment.PaymentStatus.FAILED
-            payment.processed_at = timezone.now()
-            payment.gateway_reference = f'SIM-FAIL-{payment.payment_reference}'
-            payment.gateway_response = {
-                'status': 'failed',
-                'message': 'Payment simulation failed',
-                'reason': 'Insufficient funds (simulated)',
-                'simulated': True
-            }
-            payment.save()
-            
-            messages.error(
-                request,
-                'Payment failed! Please try again or contact support.'
-            )
-            return redirect('invoice_detail', invoice_number=invoice.invoice_number)
-    
-    return redirect('invoice_detail', invoice_number=invoice.invoice_number)
+
+        elif txn_status in ('failed', 'abandoned'):
+            if payment.status == Payment.PaymentStatus.PENDING:
+                payment.status = Payment.PaymentStatus.FAILED
+                payment.gateway_response = transaction
+                payment.save()
+            messages.error(request, 'Payment was not successful. Please try again.')
+
+        else:
+            messages.info(request, f'Payment status: {txn_status}.')
+
+        return redirect('invoice_detail', invoice_number=invoice_number)
+
+    except Exception:
+        messages.error(request, 'Error verifying payment. Please contact support.')
+        return redirect('tenant_invoices')
+
+
+@csrf_exempt
+def paystack_webhook(request):
+    """Handle Paystack webhook events (charge.success, etc.)"""
+    if request.method != 'POST':
+        return HttpResponse(status=405)
+
+    # Verify Paystack HMAC-SHA512 signature
+    signature = request.headers.get('X-Paystack-Signature', '')
+    secret = settings.PAYSTACK_SECRET_KEY.encode('utf-8')
+    computed = hmac.new(secret, request.body, hashlib.sha512).hexdigest()
+
+    if not hmac.compare_digest(computed, signature):
+        return HttpResponse(status=400)
+
+    try:
+        event = json.loads(request.body)
+        event_type = event.get('event')
+        txn_data = event.get('data', {})
+
+        if event_type == 'charge.success':
+            reference = txn_data.get('reference')
+            if reference:
+                try:
+                    payment = Payment.objects.select_related(
+                        'invoice', 'tenant'
+                    ).get(gateway_reference=reference)
+
+                    if payment.status != Payment.PaymentStatus.SUCCESS:
+                        payment.status = Payment.PaymentStatus.SUCCESS
+                        payment.processed_at = timezone.now()
+                        payment.gateway_response = txn_data
+                        payment.save()
+
+                        if not hasattr(payment, 'receipt'):
+                            receipt = PaymentReceipt.objects.create(
+                                payment=payment,
+                                issued_to=payment.tenant,
+                            )
+                            _send_payment_success_email(payment, receipt)
+                except Payment.DoesNotExist:
+                    pass
+    except Exception:
+        pass
+
+    return HttpResponse(status=200)
+
+
+def _send_payment_success_email(payment, receipt):
+    """Send payment confirmation emails to tenant and landlord"""
+    invoice = payment.invoice
+    agreement = invoice.rental_agreement
+    property_title = agreement.rental_property.title
+    tenant = payment.tenant
+    landlord = agreement.landlord
+
+    # Email to tenant
+    try:
+        send_mail(
+            subject=f'Payment Confirmed – {property_title}',
+            message=(
+                f'Hi {tenant.first_name},\n\n'
+                f'Your rent payment has been confirmed.\n\n'
+                f'Invoice:   {invoice.invoice_number}\n'
+                f'Amount:    {payment.currency} {payment.amount:,.2f}\n'
+                f'Receipt:   {receipt.receipt_number}\n'
+                f'Property:  {property_title}\n'
+                f'Date:      {payment.processed_at.strftime("%d %b %Y %H:%M") if payment.processed_at else "—"}\n\n'
+                f'Thank you for your payment.\n\nPsalms Real Estate'
+            ),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[tenant.email],
+            fail_silently=False,
+        )
+    except Exception as e:
+        logger.error('Payment confirmation email to tenant %s failed: %s', tenant.email, e)
+
+    # Email to landlord
+    try:
+        send_mail(
+            subject=f'Rent Payment Received – {property_title}',
+            message=(
+                f'Hi {landlord.first_name},\n\n'
+                f'A rent payment has been received for {property_title}.\n\n'
+                f'Tenant:     {tenant.get_full_name()}\n'
+                f'Amount:     {payment.currency} {payment.amount:,.2f}\n'
+                f'Invoice:    {invoice.invoice_number}\n'
+                f'Reference:  {payment.payment_reference}\n\n'
+                f'Psalms Real Estate'
+            ),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[landlord.email],
+            fail_silently=False,
+        )
+    except Exception as e:
+        logger.error('Payment notification email to landlord %s failed: %s', landlord.email, e)
 
 
 @login_required
@@ -984,33 +1344,95 @@ def payment_history(request):
 
 
 @login_required
+def messages_inbox(request):
+    """
+    Inbox: shows broadcast messages relevant to the current user's role.
+    Super admins see all messages they sent.
+    """
+    user = request.user
+    if user.is_super_admin:
+        msgs = BroadcastMessage.objects.filter(sent_by=user)
+    else:
+        # Use active_role so switching dashboards also switches which messages are shown
+        role_map = {
+            'TENANT': 'TENANTS',
+            'LANDLORD': 'LANDLORDS',
+            'AGENT': 'AGENTS',
+        }
+        user_cat = role_map.get(user.active_role, None)
+        if user_cat:
+            msgs = BroadcastMessage.objects.filter(
+                recipient_category__in=['ALL', user_cat]
+            )
+        else:
+            msgs = BroadcastMessage.objects.filter(recipient_category='ALL')
+
+    return render(request, 'dashboard/messages_inbox.html', {
+        'msgs': msgs,
+        'page_title': 'Messages',
+    })
+
+
+@login_required
+def messages_send(request):
+    """
+    Compose + send a broadcast message. Super admin only.
+    """
+    if not request.user.is_super_admin:
+        messages.error(request, 'Only super admins can send broadcast messages.')
+        return redirect('messages_inbox')
+
+    if request.method == 'POST':
+        subject = request.POST.get('subject', '').strip()
+        body = request.POST.get('body', '').strip()
+        category = request.POST.get('recipient_category', 'ALL')
+
+        if not subject or not body:
+            messages.error(request, 'Subject and body are required.')
+        elif category not in [c[0] for c in BroadcastMessage.RecipientCategory.choices]:
+            messages.error(request, 'Invalid recipient category.')
+        else:
+            msg = BroadcastMessage.objects.create(
+                subject=subject,
+                body=body,
+                recipient_category=category,
+                sent_by=request.user,
+            )
+            messages.success(request, f'Message "{msg.subject}" sent to {msg.get_recipient_category_display()}.')
+            return redirect('messages_inbox')
+
+    return render(request, 'dashboard/messages_send.html', {
+        'categories': BroadcastMessage.RecipientCategory.choices,
+        'page_title': 'New Message',
+    })
+
+
+@login_required
 def download_receipt(request, receipt_number):
-    """
-    Download payment receipt (placeholder - will generate PDF later)
-    """
     receipt = get_object_or_404(
         PaymentReceipt.objects.select_related(
             'payment',
             'payment__invoice',
             'payment__invoice__rental_agreement',
-            'payment__invoice__rental_agreement__rental_property'
+            'payment__invoice__rental_agreement__rental_property',
+            'payment__invoice__rental_agreement__landlord',
+            'issued_to',
         ),
         receipt_number=receipt_number
     )
-    
-    # Verify permission
+
+    # Verify permission: tenant, landlord of the property, agent or admin
+    payment = receipt.payment
+    agreement = payment.invoice.rental_agreement
     if not (
-        request.user == receipt.issued_to or
-        request.user.is_super_admin or
-        request.user.is_agent
+        request.user == receipt.issued_to
+        or request.user == agreement.landlord
+        or request.user.is_agent
+        or request.user.is_super_admin
     ):
-        messages.error(request, 'You do not have permission to download this receipt.')
+        messages.error(request, 'You do not have permission to view this receipt.')
         return redirect('dashboard_redirect')
-    
-    # For now, redirect to a receipt view page
-    # TODO: Generate PDF and return file
-    messages.info(request, 'PDF generation will be implemented in the next phase.')
-    
+
     context = {
         'receipt': receipt,
         'page_title': f'Receipt #{receipt.receipt_number}',

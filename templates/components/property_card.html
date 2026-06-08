@@ -1,8 +1,8 @@
 {% load static %}
 <div class="bg-white shadow-property dark:bg-darklight rounded-lg overflow-hidden" data-aos="fade-up">
-    <a href="{% url 'property_detail' property.slug %}" class="group {% if view_mode == 'list' %}flex{% endif %}">
-        <div class="relative {% if view_mode == 'list' %}w-[30%]{% endif %}">
-            <div class="imageContainer h-[250px] w-full {% if view_mode == 'list' %}h-full md:h-52{% endif %}">
+    <div class="relative group">
+        <a href="{% url 'property_detail' property.slug %}" class="block">
+            <div class="imageContainer h-[250px] w-full overflow-hidden">
                 {% if property.featured_image %}
                 <img src="{{ property.featured_image.url }}" alt="Image of {{ property.title }}" class="w-full h-full object-cover group-hover:scale-125 duration-500">
                 {% else %}
@@ -12,55 +12,64 @@
             <p class="absolute top-[10px] left-[10px] py-1 px-4 bg-white rounded-md text-primary items-center">
                 {% if property.listing_type == 'RENT' %}For Rent{% elif property.listing_type == 'SALE' %}For Sale{% else %}Both{% endif %}
             </p>
-            <svg xmlns="http://www.w3.org/2000/svg" class="absolute top-[10px] right-[10px] bg-white p-2 rounded-lg" viewBox="0 0 24 24" width="38" height="38" fill="#2F73F2">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-            </svg>
-        </div>
-        <div class="p-5 sm:p-8 dark:text-white text-opacity-50 {% if view_mode == 'list' %}w-[70%] flex flex-col justify-center{% endif %}">
-            <div class="flex flex-col gap-1 border-b border-border dark:border-dark_border mb-6">
-                <div>
-                    <p class="text-base text-gray dark:text-gray-400">
-                        {{ property.title }}
-                    </p>
-                </div>
-                <div class="flex justify-between items-center pb-4">
-                    <div class="font-bold text-2xl group-hover:text-primary text-midnight_text dark:text-white">
-                        {{ property.formatted_price }}
-                    </div>
-                    <div class="text-xs bg-[#DAE7FF] dark:bg-white text-midnight_text dark:text-primary py-1 px-2 rounded-lg font-bold">
-                        {{ property.city }}
-                    </div>
-                </div>
+        </a>
+        <!-- Quick View Button -->
+        <button class="absolute bottom-[10px] left-1/2 -translate-x-1/2 bg-white dark:bg-semidark text-primary text-xs font-medium py-1.5 px-4 rounded-full shadow hover:bg-primary hover:text-white transition opacity-0 group-hover:opacity-100 whitespace-nowrap"
+            data-quickview="1"
+            data-title="{{ property.title }}"
+            data-image="{% if property.featured_image %}{{ property.featured_image.url }}{% else %}{% static 'images/properties/prop-1.jpg' %}{% endif %}"
+            data-price="{{ property.formatted_price }}"
+            data-location="{{ property.city }}{% if property.state %}, {{ property.state }}{% endif %}"
+            data-type="{% if property.listing_type == 'RENT' %}For Rent{% elif property.listing_type == 'SALE' %}For Sale{% else %}Both{% endif %}"
+            data-beds="{{ property.bedrooms|default:'0' }}"
+            data-baths="{{ property.bathrooms|default:'0' }}"
+            data-area="{{ property.living_area|default:'' }}"
+            data-url="{% url 'property_detail' property.slug %}"
+            data-phone="{{ property.landlord.phone_number|default:'' }}">
+            Quick View
+        </button>
+        <svg xmlns="http://www.w3.org/2000/svg" class="absolute top-[10px] right-[10px] bg-white p-2 rounded-lg" viewBox="0 0 24 24" width="38" height="38" fill="#2F73F2">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+        </svg>
+    </div>
+    <div class="p-5 sm:p-8 dark:text-white text-opacity-50">
+        <div class="flex flex-col gap-1 border-b border-border dark:border-dark_border mb-4">
+            <div>
+                <p class="text-base text-gray dark:text-gray-400">{{ property.title }}</p>
             </div>
-            <div class="flex gap-2 flex-wrap justify-between">
-                <div class="flex flex-col">
-                    <p class="text-sm md:text-base font-bold flex gap-2 items-center">
-                        <img src="{% static 'images/svgs/icon-bed.svg' %}" alt="Bedrooms Icon" height="18" width="18" style="width: auto; height: auto;">
-                        {{ property.bedrooms|default:"N/A" }}
-                    </p>
-                    <p class="text-sm text-gray dark:text-gray-400">
-                        Bedrooms
-                    </p>
-                </div>
-                <div class="flex flex-col">
-                    <p class="text-sm md:text-base font-bold flex gap-2 items-center">
-                        <img src="{% static 'images/svgs/icon-tub.svg' %}" alt="Bathrooms Icon" height="18" width="18" style="width: auto; height: auto;">
-                        {{ property.bathrooms|default:"N/A" }}
-                    </p>
-                    <p class="text-sm text-gray dark:text-gray-400">
-                        Bathroom
-                    </p>
-                </div>
-                <div class="flex flex-col">
-                    <p class="text-sm md:text-base font-bold flex gap-2 items-center">
-                        <img src="{% static 'images/svgs/icon-layout.svg' %}" alt="Living Area Icon" height="18" width="18" style="width: auto; height: auto;">
-                        {{ property.living_area|default:"N/A" }}m²
-                    </p>
-                    <p class="text-sm text-gray dark:text-gray-400">
-                        Living Area
-                    </p>
-                </div>
+            <div class="flex justify-between items-center pb-4">
+                <div class="font-bold text-2xl text-midnight_text dark:text-white">{{ property.formatted_price }}</div>
+                <div class="text-xs bg-[#DAE7FF] dark:bg-white text-midnight_text dark:text-primary py-1 px-2 rounded-lg font-bold">{{ property.city }}</div>
             </div>
         </div>
-    </a>
-</div>
+        <div class="flex gap-2 flex-wrap justify-between mb-4">
+            <div class="flex flex-col">
+                <p class="text-sm md:text-base font-bold flex gap-2 items-center">
+                    <img src="{% static 'images/svgs/icon-bed.svg' %}" alt="Bedrooms Icon" height="18" width="18" style="width: auto; height: auto;">
+                    {{ property.bedrooms|default:"N/A" }}
+                </p>
+                <p class="text-sm text-gray dark:text-gray-400">Bedrooms</p>
+            </div>
+            <div class="flex flex-col">
+                <p class="text-sm md:text-base font-bold flex gap-2 items-center">
+                    <img src="{% static 'images/svgs/icon-tub.svg' %}" alt="Bathrooms Icon" height="18" width="18" style="width: auto; height: auto;">
+                    {{ property.bathrooms|default:"N/A" }}
+                </p>
+                <p class="text-sm text-gray dark:text-gray-400">Bathroom</p>
+            </div>
+            <div class="flex flex-col">
+                <p class="text-sm md:text-base font-bold flex gap-2 items-center">
+                    <img src="{% static 'images/svgs/icon-layout.svg' %}" alt="Living Area Icon" height="18" width="18" style="width: auto; height: auto;">
+                    {{ property.living_area|default:"N/A" }}m²
+                </p>
+                <p class="text-sm text-gray dark:text-gray-400">Living Area</p>
+            </div>
+        </div>
+        <!-- Call Button -->
+        {% if property.landlord.phone_number %}
+        <a href="tel:{{ property.landlord.phone_number }}" class="flex items-center justify-center gap-2 w-full border border-primary text-primary hover:bg-primary hover:text-white py-2 rounded-lg text-sm font-medium transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+            Call Landlord
+        </a>
+        {% endif %}
+    </div>

@@ -826,7 +826,6 @@ class RentalAgreement(models.Model):
         User,
         on_delete=models.PROTECT,
         related_name='landlord_agreements',
-        limit_choices_to={'role': User.Role.LANDLORD},
         help_text=_('Property landlord')
     )
     tenant = models.ForeignKey(
@@ -852,7 +851,8 @@ class RentalAgreement(models.Model):
     monthly_rent = models.DecimalField(
         max_digits=12,
         decimal_places=2,
-        help_text=_('Monthly rent amount')
+        verbose_name=_('Yearly Rent'),
+        help_text=_('Annual rent amount')
     )
     security_deposit = models.DecimalField(
         max_digits=12,
@@ -1134,12 +1134,23 @@ class Payment(models.Model):
             
             self.payment_reference = f'PAY-{date_str}-{new_num:04d}'
         
-        # Update invoice when payment is successful
+        # Update invoice only on the FIRST transition to SUCCESS (prevent double-counting)
         if self.status == self.PaymentStatus.SUCCESS and self.invoice:
-            self.invoice.paid_amount += self.amount
-            if not self.invoice.paid_at:
-                self.invoice.paid_at = self.processed_at or timezone.now()
-            self.invoice.save()
+            is_new_success = False
+            if self.pk:
+                try:
+                    previous = Payment.objects.get(pk=self.pk)
+                    is_new_success = previous.status != self.PaymentStatus.SUCCESS
+                except Payment.DoesNotExist:
+                    is_new_success = True
+            else:
+                is_new_success = True  # Brand-new payment created directly as SUCCESS
+
+            if is_new_success:
+                self.invoice.paid_amount += self.amount
+                if not self.invoice.paid_at:
+                    self.invoice.paid_at = self.processed_at or timezone.now()
+                self.invoice.save()
         
         super().save(*args, **kwargs)
     
@@ -1211,3 +1222,77 @@ class PaymentReceipt(models.Model):
             self.receipt_number = f'REC-{date_str}-{new_num:04d}'
         
         super().save(*args, **kwargs)
+
+
+# ============================================================================
+# SITE SETTINGS (SINGLETON)
+# ============================================================================
+
+class SiteSettings(models.Model):
+    """
+    Singleton model for site-wide configuration.
+    Only one instance (pk=1) should ever exist.
+    """
+    contact_number = models.CharField(
+        max_length=30,
+        blank=True,
+        help_text=_('Contact phone number shown on property pages (Super Admin number)')
+    )
+
+    class Meta:
+        verbose_name = _('Site Settings')
+        verbose_name_plural = _('Site Settings')
+
+    def __str__(self):
+        return 'Site Settings'
+
+    def save(self, *args, **kwargs):
+        self.pk = 1  # Enforce singleton
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        pass  # Prevent deletion
+
+    @classmethod
+    def get_settings(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+
+# ============================================================================
+# BROADCAST MESSAGES
+# ============================================================================
+
+class BroadcastMessage(models.Model):
+    """
+    Admin-to-user broadcast messages. Admin selects a recipient category
+    and the message is visible to all users in that group.
+    """
+    class RecipientCategory(models.TextChoices):
+        ALL = 'ALL', _('All Users')
+        TENANTS = 'TENANTS', _('Tenants')
+        LANDLORDS = 'LANDLORDS', _('Landlords')
+        AGENTS = 'AGENTS', _('Agents')
+
+    subject = models.CharField(max_length=255)
+    body = models.TextField()
+    recipient_category = models.CharField(
+        max_length=20,
+        choices=RecipientCategory.choices,
+        default=RecipientCategory.ALL,
+    )
+    sent_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='sent_broadcasts',
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = _('Broadcast Message')
+        verbose_name_plural = _('Broadcast Messages')
+
+    def __str__(self):
+        return f'{self.subject} → {self.get_recipient_category_display()}'
