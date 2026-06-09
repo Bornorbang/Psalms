@@ -53,6 +53,9 @@ urlpatterns = [
     path('dashboard/landlord/tenants/', views.landlord_tenants, name='landlord_tenants'),
     path('dashboard/landlord/payments/', views.landlord_payments, name='landlord_payments'),
     path('dashboard/agent/', views.agent_dashboard, name='agent_dashboard'),
+    path('dashboard/agent/landlords/', views.agent_landlords, name='agent_landlords'),
+    path('dashboard/agent/tenants/', views.agent_tenants, name='agent_tenants'),
+    path('dashboard/agent/transactions/', views.agent_transactions, name='agent_transactions'),
     path('dashboard/admin/', views.admin_dashboard, name='admin_dashboard'),
     
     # Property Management URLs (Agent/Admin)

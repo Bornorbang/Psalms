@@ -59,8 +59,8 @@ def home(request):
 
 def properties_list(request):
     """Properties listing page with database-driven filtering"""
-    # Start with all available properties
-    properties = Property.objects.filter(status__in=['AVAILABLE', 'PENDING']).select_related('landlord', 'agent')
+    # Start with all visible properties (available, pending, and rented)
+    properties = Property.objects.filter(status__in=['AVAILABLE', 'PENDING', 'RENTED']).select_related('landlord', 'agent')
     
     # Get filter parameters
     keyword = request.GET.get('keyword', '')
@@ -229,7 +229,8 @@ def signin(request):
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
+            # Backend handles both username and email lookup
+            user = authenticate(request, username=username, password=password)
             
             if user is not None:
                 login(request, user)
@@ -638,11 +639,146 @@ def landlord_dashboard(request):
 
 @agent_required
 def agent_dashboard(request):
-    """Agent dashboard view"""
+    """Agent dashboard view — dynamic stats"""
+    user = request.user
+
+    # Properties uploaded by this agent
+    my_properties = Property.objects.filter(created_by=user)
+    properties_count = my_properties.count()
+
+    # Agreements managed by this agent
+    managed_agreements = RentalAgreement.objects.filter(agent=user)
+
+    # Active tenants (distinct) in active agreements managed by agent
+    active_tenants_count = managed_agreements.filter(
+        status='ACTIVE', invoices__status='PAID'
+    ).values('tenant').distinct().count()
+
+    # Landlords (distinct) on properties this agent uploaded
+    landlords_count = my_properties.exclude(
+        landlord__isnull=True
+    ).values('landlord').distinct().count()
+
+    # Total payments received on agent-managed agreements
+    transactions_total = Payment.objects.filter(
+        invoice__rental_agreement__agent=user,
+        status='SUCCESS',
+    ).aggregate(total=Sum('amount'))['total'] or 0
+
+    transactions_count = Payment.objects.filter(
+        invoice__rental_agreement__agent=user,
+        status='SUCCESS',
+    ).count()
+
+    # Recent payments
+    recent_transactions = Payment.objects.filter(
+        invoice__rental_agreement__agent=user,
+        status='SUCCESS',
+    ).select_related(
+        'tenant', 'invoice',
+        'invoice__rental_agreement__rental_property',
+        'invoice__rental_agreement__landlord',
+    ).order_by('-processed_at', '-created_at')[:5]
+
+    # Recent properties added
+    recent_properties = my_properties.prefetch_related('images').order_by('-created_at')[:5]
+
     context = {
-        'user': request.user,
+        'user': user,
+        'properties_count': properties_count,
+        'active_tenants_count': active_tenants_count,
+        'landlords_count': landlords_count,
+        'transactions_total': transactions_total,
+        'transactions_count': transactions_count,
+        'recent_transactions': recent_transactions,
+        'recent_properties': recent_properties,
     }
     return render(request, 'dashboard/agent_dashboard.html', context)
+
+
+@agent_required
+def agent_landlords(request):
+    """Landlords of properties uploaded by this agent"""
+    user = request.user
+
+    # Get distinct landlords whose properties were created by this agent
+    landlord_ids = Property.objects.filter(
+        created_by=user
+    ).exclude(landlord__isnull=True).values_list('landlord_id', flat=True).distinct()
+
+    landlords = User.objects.filter(id__in=landlord_ids).order_by('first_name', 'last_name')
+
+    # Annotate each landlord with their property count (scoped to this agent)
+    landlord_data = []
+    for landlord in landlords:
+        props = Property.objects.filter(created_by=user, landlord=landlord)
+        active_agreements = RentalAgreement.objects.filter(
+            landlord=landlord, agent=user, status='ACTIVE'
+        ).count()
+        landlord_data.append({
+            'landlord': landlord,
+            'property_count': props.count(),
+            'active_agreements': active_agreements,
+        })
+
+    return render(request, 'dashboard/agent_landlords.html', {
+        'landlord_data': landlord_data,
+        'total_count': len(landlord_data),
+        'page_title': 'Landlords',
+    })
+
+
+@agent_required
+def agent_tenants(request):
+    """Tenants in agreements managed by this agent"""
+    user = request.user
+
+    agreements = RentalAgreement.objects.filter(
+        agent=user,
+        invoices__status='PAID',
+    ).distinct().select_related(
+        'tenant', 'landlord', 'rental_property'
+    ).order_by('-status', '-start_date')
+
+    active_count = agreements.filter(status='ACTIVE').count()
+
+    return render(request, 'dashboard/agent_tenants.html', {
+        'agreements': agreements,
+        'active_count': active_count,
+        'total_count': agreements.count(),
+        'page_title': 'Tenants',
+    })
+
+
+@agent_required
+def agent_transactions(request):
+    """All payments on agreements managed by this agent"""
+    user = request.user
+
+    payments_qs = Payment.objects.filter(
+        invoice__rental_agreement__agent=user,
+        status='SUCCESS',
+    ).select_related(
+        'tenant', 'invoice',
+        'invoice__rental_agreement',
+        'invoice__rental_agreement__rental_property',
+        'invoice__rental_agreement__landlord',
+    ).order_by('-processed_at', '-created_at')
+
+    total_amount = payments_qs.aggregate(total=Sum('amount'))['total'] or 0
+
+    paginator = Paginator(payments_qs, 15)
+    page_number = request.GET.get('page')
+    payments = paginator.get_page(page_number)
+
+    return render(request, 'dashboard/agent_transactions.html', {
+        'payments': payments,
+        'total_amount': total_amount,
+        'total_count': payments_qs.count(),
+        'page_title': 'Transactions',
+    })
+
+
 
 
 @landlord_required
@@ -797,10 +933,11 @@ def property_add(request):
         form = PropertyForm(request.POST, request.FILES)
         formset = PropertyImageFormSet(request.POST, request.FILES)
         
-        if form.is_valid() and formset.is_valid():
+        if form.is_valid():
             # Save property and set created_by to current user
             property_obj = form.save(commit=False)
             property_obj.created_by = request.user
+            property_obj.landlord = form.cleaned_data.get('landlord')
             
             # If agent uploaded and didn't assign to themselves, set as agent
             if request.user.is_agent and not property_obj.agent:
@@ -808,9 +945,10 @@ def property_add(request):
             
             property_obj.save()
             
-            # Save property images
-            formset.instance = property_obj
-            formset.save()
+            # Save property images (formset failure doesn't block property save)
+            formset = PropertyImageFormSet(request.POST, request.FILES, instance=property_obj)
+            if formset.is_valid():
+                formset.save()
             
             messages.success(request, f'Property "{property_obj.title}" added successfully!')
             return redirect('agent_property_list')
@@ -844,9 +982,9 @@ def property_edit(request, slug):
     
     # Check permissions
     if request.user.is_agent:
-        # Agents can only edit properties they created
-        if property_obj.created_by != request.user:
-            messages.error(request, 'You can only edit properties you uploaded.')
+        # Agents can edit properties they created OR properties assigned to them
+        if property_obj.created_by != request.user and property_obj.agent != request.user:
+            messages.error(request, 'You can only edit properties assigned to you.')
             return redirect('agent_property_list')
     elif not request.user.is_super_admin:
         # Only agents and super_admins can edit
@@ -855,11 +993,17 @@ def property_edit(request, slug):
     
     if request.method == 'POST':
         form = PropertyForm(request.POST, request.FILES, instance=property_obj)
-        formset = PropertyImageFormSet(request.POST, request.FILES, instance=property_obj)
         
-        if form.is_valid() and formset.is_valid():
-            property_obj = form.save()
-            formset.save()
+        if form.is_valid():
+            property_obj = form.save(commit=False)
+            property_obj.landlord = form.cleaned_data.get('landlord')
+            property_obj.save()
+            form.save_m2m()
+            
+            # Save images (formset failure doesn't block property save)
+            formset = PropertyImageFormSet(request.POST, request.FILES, instance=property_obj)
+            if formset.is_valid():
+                formset.save()
             
             messages.success(request, f'Property "{property_obj.title}" updated successfully!')
             return redirect('agent_property_list')
@@ -867,6 +1011,7 @@ def property_edit(request, slug):
             for field, errors in form.errors.items():
                 for error in errors:
                     messages.error(request, f'{field}: {error}')
+            formset = PropertyImageFormSet(instance=property_obj)
     else:
         form = PropertyForm(instance=property_obj)
         formset = PropertyImageFormSet(instance=property_obj)
@@ -924,7 +1069,10 @@ def agent_property_list(request):
     if request.user.is_super_admin:
         properties = Property.objects.all()
     else:
-        properties = Property.objects.filter(created_by=request.user)
+        # Show properties the agent created OR properties assigned to them by admin
+        properties = Property.objects.filter(
+            Q(created_by=request.user) | Q(agent=request.user)
+        ).distinct()
     
     # Apply filters from query params
     status = request.GET.get('status')
@@ -1160,6 +1308,16 @@ def payment_callback(request):
             payment.gateway_response = transaction
             payment.save()
 
+            # Mark the rental agreement as ACTIVE and the property as RENTED
+            agreement = payment.invoice.rental_agreement
+            if agreement.status != 'ACTIVE':
+                agreement.status = 'ACTIVE'
+                agreement.save(update_fields=['status'])
+            prop = agreement.rental_property
+            if prop.status != 'RENTED':
+                prop.status = 'RENTED'
+                prop.save(update_fields=['status'])
+
             receipt = PaymentReceipt.objects.create(
                 payment=payment,
                 issued_to=request.user,
@@ -1219,6 +1377,16 @@ def paystack_webhook(request):
                         payment.processed_at = timezone.now()
                         payment.gateway_response = txn_data
                         payment.save()
+
+                        # Mark the rental agreement as ACTIVE and the property as RENTED
+                        agreement = payment.invoice.rental_agreement
+                        if agreement.status != 'ACTIVE':
+                            agreement.status = 'ACTIVE'
+                            agreement.save(update_fields=['status'])
+                        prop = agreement.rental_property
+                        if prop.status != 'RENTED':
+                            prop.status = 'RENTED'
+                            prop.save(update_fields=['status'])
 
                         if not hasattr(payment, 'receipt'):
                             receipt = PaymentReceipt.objects.create(

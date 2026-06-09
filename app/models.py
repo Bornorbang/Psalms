@@ -425,7 +425,6 @@ class Property(models.Model):
         related_name='owned_properties',
         blank=True,
         null=True,
-        limit_choices_to={'role': 'LANDLORD'},
         help_text=_('Property owner (Landlord) - Assigned by admin/agent')
     )
     created_by = models.ForeignKey(

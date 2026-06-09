@@ -31,27 +31,32 @@
     My Properties
 </a>
 
-<a href="#" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
+<a href="{% url 'agent_landlords' %}" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
     </svg>
     Landlords
-    <span class="ml-auto bg-gray-300 dark:bg-gray-700 text-midnight_text dark:text-white text-xs px-2 py-1 rounded-full">0</span>
 </a>
 
-<a href="#" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
+<a href="{% url 'agent_tenants' %}" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
     </svg>
     Tenants
-    <span class="ml-auto bg-gray-300 dark:bg-gray-700 text-midnight_text dark:text-white text-xs px-2 py-1 rounded-full">0</span>
 </a>
 
-<a href="#" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
+<a href="{% url 'agent_transactions' %}" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
     </svg>
     Transactions
+</a>
+
+<a href="{% url 'messages_inbox' %}" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
+    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+    </svg>
+    Messages
 </a>
 
 <div class="pt-6 mt-6 border-t border-gray-200 dark:border-gray-700">
@@ -71,71 +76,133 @@
 {% endblock %}
 
 {% block dashboard_content %}
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white dark:bg-semidark rounded-lg shadow p-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Assigned Properties</p>
-                <p class="text-xl font-bold text-midnight_text dark:text-white">0</p>
-            </div>
-            <div class="bg-blue-100 dark:bg-blue-900/20 p-3 rounded-lg">
-                <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                </svg>
-            </div>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white dark:bg-semidark rounded-xl shadow-sm p-5 flex items-center gap-4">
+        <div class="bg-blue-100 dark:bg-blue-900/20 p-3 rounded-lg flex-shrink-0">
+            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+        </div>
+        <div>
+            <p class="text-xs text-gray-500 dark:text-gray-400">My Properties</p>
+            <p class="text-2xl font-bold text-midnight_text dark:text-white">{{ properties_count }}</p>
         </div>
     </div>
-    <div class="bg-white dark:bg-semidark rounded-lg shadow p-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Active Clients</p>
-                <p class="text-xl font-bold text-midnight_text dark:text-white">0</p>
-            </div>
-            <div class="bg-green-100 dark:bg-green-900/20 p-3 rounded-lg">
-                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                </svg>
-            </div>
+    <div class="bg-white dark:bg-semidark rounded-xl shadow-sm p-5 flex items-center gap-4">
+        <div class="bg-purple-100 dark:bg-purple-900/20 p-3 rounded-lg flex-shrink-0">
+            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+        </div>
+        <div>
+            <p class="text-xs text-gray-500 dark:text-gray-400">Landlords</p>
+            <p class="text-2xl font-bold text-midnight_text dark:text-white">{{ landlords_count }}</p>
         </div>
     </div>
-    <div class="bg-white dark:bg-semidark rounded-lg shadow p-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">This Month</p>
-                <p class="text-xl font-bold text-midnight_text dark:text-white">$0</p>
-            </div>
-            <div class="bg-purple-100 dark:bg-purple-900/20 p-3 rounded-lg">
-                <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-            </div>
+    <div class="bg-white dark:bg-semidark rounded-xl shadow-sm p-5 flex items-center gap-4">
+        <div class="bg-green-100 dark:bg-green-900/20 p-3 rounded-lg flex-shrink-0">
+            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+        </div>
+        <div>
+            <p class="text-xs text-gray-500 dark:text-gray-400">Active Tenants</p>
+            <p class="text-2xl font-bold text-midnight_text dark:text-white">{{ active_tenants_count }}</p>
         </div>
     </div>
-    <div class="bg-white dark:bg-semidark rounded-lg shadow p-6">
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Pending Tasks</p>
-                <p class="text-xl font-bold text-midnight_text dark:text-white">0</p>
-            </div>
-            <div class="bg-yellow-100 dark:bg-yellow-900/20 p-3 rounded-lg">
-                <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                </svg>
-            </div>
+    <div class="bg-white dark:bg-semidark rounded-xl shadow-sm p-5 flex items-center gap-4">
+        <div class="bg-yellow-100 dark:bg-yellow-900/20 p-3 rounded-lg flex-shrink-0">
+            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </div>
+        <div>
+            <p class="text-xs text-gray-500 dark:text-gray-400">Total Received</p>
+            <p class="text-xl font-bold text-green-600">&#8358;{{ transactions_total|floatformat:0 }}</p>
         </div>
     </div>
 </div>
 
-<div class="bg-white dark:bg-semidark rounded-lg shadow p-6">
-    <h2 class="text-xl font-bold text-midnight_text dark:text-white mb-4">Agent Dashboard</h2>
-    <div class="text-center py-12">
-        <svg class="w-16 h-16 text-gray-300 dark:text-gray-700 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-        </svg>
-        <p class="text-gray-500 dark:text-gray-400 mb-4">Manage properties, clients, and commissions</p>
-        <a href="#" class="inline-block bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-            Get Started
-        </a>
+<div class="grid grid-cols-1 gap-6">
+
+    <!-- Recent Properties -->
+    <div class="bg-white dark:bg-semidark rounded-xl shadow-sm p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-base font-bold text-midnight_text dark:text-white">Recent Properties</h2>
+            <a href="{% url 'agent_property_list' %}" class="text-sm text-primary hover:underline">View all &rarr;</a>
+        </div>
+        {% if recent_properties %}
+        <div class="space-y-3">
+            {% for prop in recent_properties %}
+            <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-darklight">
+                <div class="w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden flex-shrink-0">
+                    {% if prop.featured_image %}
+                    <img src="{{ prop.featured_image.url }}" alt="{{ prop.title }}" class="w-full h-full object-cover">
+                    {% else %}
+                    <div class="w-full h-full flex items-center justify-center">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-midnight_text dark:text-white truncate">{{ prop.title }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ prop.city }}{% if prop.state %}, {{ prop.state }}{% endif %}</p>
+                </div>
+                <span class="text-xs px-2 py-1 rounded-full font-semibold flex-shrink-0
+                    {% if prop.status == 'AVAILABLE' %}bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400
+                    {% elif prop.status == 'RENTED' %}bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400
+                    {% else %}bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400{% endif %}">
+                    {{ prop.get_status_display }}
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-10">
+            <svg class="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+            <p class="text-sm text-gray-400 dark:text-gray-500">No properties added yet</p>
+            <a href="{% url 'property_add' %}" class="mt-3 inline-block text-sm text-primary hover:underline">Add your first property &rarr;</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="bg-white dark:bg-semidark rounded-xl shadow-sm p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-base font-bold text-midnight_text dark:text-white">Recent Transactions</h2>
+            <a href="{% url 'agent_transactions' %}" class="text-sm text-primary hover:underline">View all &rarr;</a>
+        </div>
+        {% if recent_transactions %}
+        <div class="space-y-3">
+            {% for payment in recent_transactions %}
+            <div class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-darklight">
+                <div class="min-w-0">
+                    <p class="text-sm font-semibold text-midnight_text dark:text-white truncate">
+                        {{ payment.invoice.rental_agreement.rental_property.title }}
+                    </p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                        {{ payment.tenant.get_full_name }} &middot; {{ payment.processed_at|date:"d M Y" }}
+                    </p>
+                </div>
+                <span class="text-sm font-bold text-green-600 flex-shrink-0 ml-2">&#8358;{{ payment.amount|floatformat:0 }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-10">
+            <svg class="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <p class="text-sm text-gray-400 dark:text-gray-500">No transactions yet</p>
+        </div>
+        {% endif %}
     </div>
 </div>
+
 {% endblock %}

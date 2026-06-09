@@ -290,8 +290,10 @@ class PropertyForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Filter landlord choices to only show users with LANDLORD role
-        self.fields['landlord'].queryset = User.objects.filter(role=User.Role.LANDLORD)
+        # Show all users except agents and super admins (tenants can be landlords too)
+        self.fields['landlord'].queryset = User.objects.exclude(
+            role__in=[User.Role.AGENT, User.Role.SUPER_ADMIN]
+        ).order_by('first_name', 'last_name')
         self.fields['landlord'].required = False
         self.fields['landlord'].label = "Assign to Landlord (Optional)"
 

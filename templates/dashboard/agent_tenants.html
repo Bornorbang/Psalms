@@ -4,35 +4,45 @@
 {% block dashboard_title %}{{ page_title }}{% endblock %}
 
 {% block subtitle_content %}
-<p class="text-gray-600 dark:text-gray-400">
-    All tenants across your properties
-</p>
+<p class="text-gray-600 dark:text-gray-400">Tenants in agreements you manage</p>
 {% endblock %}
 
 {% block sidebar_nav %}
-<a href="{% url 'landlord_dashboard' %}" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
+<a href="{% url 'agent_dashboard' %}" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
     </svg>
     Dashboard
 </a>
-<a href="{% url 'landlord_properties' %}" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
+<a href="{% url 'property_add' %}" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
+    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+    </svg>
+    Add Property
+</a>
+<a href="{% url 'agent_property_list' %}" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
     </svg>
     My Properties
 </a>
-<a href="{% url 'landlord_tenants' %}" class="flex items-center px-4 py-3 text-primary bg-blue-50 dark:bg-blue-900/20 rounded-lg font-medium">
+<a href="{% url 'agent_landlords' %}" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
+    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+    </svg>
+    Landlords
+</a>
+<a href="{% url 'agent_tenants' %}" class="flex items-center px-4 py-3 text-primary bg-blue-50 dark:bg-blue-900/20 rounded-lg font-medium">
     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
     </svg>
-    My Tenants
+    Tenants
 </a>
-<a href="{% url 'landlord_payments' %}" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
+<a href="{% url 'agent_transactions' %}" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
     </svg>
-    Payment Received
+    Transactions
 </a>
 <a href="{% url 'messages_inbox' %}" class="flex items-center px-4 py-3 text-midnight_text dark:text-white hover:bg-gray-100 dark:hover:bg-darklight rounded-lg">
     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -58,7 +68,7 @@
 
 {% block dashboard_content %}
 
-<!-- Summary strip -->
+<!-- Summary -->
 <div class="grid grid-cols-2 gap-4 mb-6">
     <div class="bg-white dark:bg-semidark rounded-xl shadow-sm p-5 flex items-center gap-4">
         <div class="bg-green-100 dark:bg-green-900/20 p-3 rounded-lg flex-shrink-0">
@@ -90,12 +100,15 @@
     <div class="bg-white dark:bg-semidark rounded-xl shadow-sm border border-gray-100 dark:border-dark_border overflow-hidden">
         <div class="flex flex-col md:flex-row">
 
-            <!-- Left: Tenant info -->
+            <!-- Tenant info -->
             <div class="flex-1 p-5 border-b md:border-b-0 md:border-r border-gray-100 dark:border-dark_border">
                 <div class="flex items-start gap-4">
-                    <!-- Avatar placeholder -->
-                    <div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-                        {{ agreement.tenant.first_name|first|upper }}{{ agreement.tenant.last_name|first|upper }}
+                    <div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-bold text-lg flex-shrink-0 overflow-hidden">
+                        {% if agreement.tenant.profile_picture %}
+                            <img src="{{ agreement.tenant.profile_picture.url }}" alt="{{ agreement.tenant.get_full_name }}" class="w-12 h-12 object-cover">
+                        {% else %}
+                            {{ agreement.tenant.first_name|first|upper }}{{ agreement.tenant.last_name|first|upper }}
+                        {% endif %}
                     </div>
                     <div>
                         <h3 class="font-semibold text-midnight_text dark:text-white text-base leading-tight">
@@ -103,13 +116,13 @@
                         </h3>
                         <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{{ agreement.tenant.email }}</p>
                         {% if agreement.tenant.phone_number %}
-                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ agreement.tenant.phone_number }}</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ agreement.tenant.phone_number }}</p>
                         {% endif %}
                     </div>
                 </div>
             </div>
 
-            <!-- Middle: Agreement details -->
+            <!-- Agreement details -->
             <div class="flex-1 p-5 border-b md:border-b-0 md:border-r border-gray-100 dark:border-dark_border">
                 <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide font-medium mb-3">Agreement Details</p>
                 <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
@@ -119,7 +132,7 @@
                     </div>
                     <div>
                         <p class="text-gray-400 dark:text-gray-500 text-xs">Annual Rent</p>
-                        <p class="font-semibold text-green-600">₦{{ agreement.monthly_rent|floatformat:0 }}</p>
+                        <p class="font-semibold text-green-600">&#8358;{{ agreement.monthly_rent|floatformat:0 }}</p>
                     </div>
                     <div>
                         <p class="text-gray-400 dark:text-gray-500 text-xs">Start Date</p>
@@ -132,32 +145,40 @@
                 </div>
             </div>
 
-            <!-- Right: Status + actions -->
-            <div class="p-5 flex flex-col justify-between items-end min-w-[140px]">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
-                    {% if agreement.status == 'ACTIVE' %}bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300
-                    {% elif agreement.status == 'EXPIRED' %}bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300
-                    {% elif agreement.status == 'TERMINATED' %}bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300
-                    {% else %}bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300{% endif %}">
-                    {% if agreement.status == 'ACTIVE' %}
-                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></span>
-                    {% endif %}
-                    {{ agreement.get_status_display }}
-                </span>
+            <!-- Status + Landlord -->
+            <div class="p-5 flex flex-col justify-between min-w-[160px]">
+                <div>
+                    <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide font-medium mb-2">Status</p>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
+                        {% if agreement.status == 'ACTIVE' %}bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300
+                        {% elif agreement.status == 'EXPIRED' %}bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300
+                        {% elif agreement.status == 'TERMINATED' %}bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300
+                        {% else %}bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300{% endif %}">
+                        {% if agreement.status == 'ACTIVE' %}
+                            <span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></span>
+                        {% endif %}
+                        {{ agreement.get_status_display }}
+                    </span>
+                </div>
+                {% if agreement.landlord %}
+                <div class="mt-4">
+                    <p class="text-xs text-gray-400 dark:text-gray-500">Landlord</p>
+                    <p class="text-sm font-medium text-midnight_text dark:text-white">{{ agreement.landlord.get_full_name }}</p>
+                </div>
+                {% endif %}
             </div>
 
         </div>
     </div>
     {% endfor %}
 </div>
-
 {% else %}
 <div class="bg-white dark:bg-semidark rounded-xl shadow-sm p-16 text-center">
     <svg class="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
     </svg>
-    <p class="text-gray-500 dark:text-gray-400 text-lg font-medium mb-1">No tenants yet</p>
-    <p class="text-gray-400 dark:text-gray-500 text-sm">Tenants will appear here once a rental agreement is created for your properties.</p>
+    <p class="text-gray-500 dark:text-gray-400 font-medium mb-1">No tenants yet</p>
+    <p class="text-sm text-gray-400 dark:text-gray-500">Tenants will appear here after rental agreements are created and paid.</p>
 </div>
 {% endif %}
 
