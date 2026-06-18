@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from .models import (
     User, Property, PropertyImage, 
     PropertyDocument, Amenity, PropertyAmenity,
@@ -60,7 +61,7 @@ class UserAdmin(BaseUserAdmin):
             badges.append(
                 f'<span style="background-color: {color}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-right: 4px;">{role_name}</span>'
             )
-        return format_html(''.join(badges))
+        return mark_safe(''.join(badges))
     display_roles.short_description = 'All Roles'
     
     def get_queryset(self, request):
